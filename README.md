@@ -48,7 +48,7 @@ Inicialmente se poseen dos routers con direcciones IP asignadas mediante el ISP 
 | G-net       | 5           | 10          | 1           |
 | S-net       | 8           | 0           | 1           |
 
-Sin embargo, al requerir interconectar cada router, es necesario crear 2 sub-redes nuevas, MP-net y PS-net. Actualizando la tabla anterior de esta manera:
+Sin embargo, al requerir interconectar los routers de caracas (sin utilizar costos adicionales en cables al tomar a El Paraiso como nodo central), es necesario crear 2 sub-redes nuevas, MP-net y PS-net, a su vez que son requeridas otras dos para las conexiones de Guarenas al ISP y del ISP a Maiquetia. Actualizando la tabla anterior de esta manera:
 
 | Subred      | Nº Hosts    | Crec. Estim.| Routers     |
 |-------------|-------------|-------------|-------------|
@@ -58,9 +58,11 @@ Sin embargo, al requerir interconectar cada router, es necesario crear 2 sub-red
 | S-net       | 8           | 0           | 1           |
 | MP-net      | 2           | 0           | 0           |
 | PS-net      | 2           | 0           | 0           |
+| GI-net      | 2           | 0           | 0           |
+| MI-net      | 2           | 0           | 0           |
 
 +-------------+-------------+-------------+-------------+
-|TOTAL        | 30          | 45          | 4           |
+|TOTAL        | 34          | 45          | 4           |
 +-------------+-------------+-------------+-------------+ 
 
 
@@ -80,26 +82,27 @@ A pesar de que para la G-net se estan desperdiciando 14 direcciones, utilizar un
 
 Sin procesar las subredes en PMS-net, se tiene:
 
-| Subred | Máscara         | Dir Subred    | Broadcast     | Rango       | D. Libres |
-|--------|-----------------|---------------|---------------|-------------|-----------|
-| PMS-net| 255.255.255.128 | 192.168.0.0   | 192.168.0.127 | .1 - .126   | 63        |
-| G-net  | 255.255.255.224 | 192.168.0.128 | 192.168.0.159 | .129 - .159 | 14        |
+| Subred | Máscara         | Dir Subred   | Broadcast    | Rango       | D. Libres |
+|--------|-----------------|--------------|--------------|-------------|-----------|
+| PMS-net| 255.255.255.128 | 20.42.10.0   | 20.42.10.127 | .1 - .126   | 63        |
+| G-net  | 255.255.255.224 | 20.42.10.128 | 20.42.10.159 | .129 - .159 | 14        |
 
-Sin embargo, PMS-net y G-net se encuentran físicamente distantes, conectadas a través de un ISP. Siendo conveniente tener todos los host de salud-Caracas en una misma subred, requiriendo seguridad para estas pero al disponer de subredes diferentes, se decidió hacer unso de una intranet VPN site-to-site, basada en el protocolo IPSec. Los routers ciscos (presentes en la herramienta Packet Tracer 6.2) poseen esta tecnología y representan de manera simple la configuración para levantar la intranet VPN anteriormente mencionada, además de existir la documentación suficiente al respecto. Por ende, y como es deseable tener a PMS-net y G-net interconectadas entre sí de una manera segura, se implementó tal.
-
+Sin embargo, PMS-net y G-net se encuentran físicamente distantes, conectadas a través de un ISP. Siendo conveniente tener todos los host de salud-Caracas en una misma subred, y al ser una pudiente cadena hospitalaria, se contrató del ISP Cantv la subred 220.42.10.0/24 y 
 Sin embargo, al estar ambas en una misma subred a través del VPN implementado, se dividió la subred privada del router de M-net y el de G-net de manera de que no se solapen entre sí. Luego, la intranet generada quedó organizada de esta manera:
 
-| Subred | Máscara         | Dir Subred    | Broadcast     | Rango     | D. Libres |
-|--------|-----------------|---------------|---------------|-----------|-----------|
-| PMS-net| 255.255.255.128 | 192.168.0.0   | 192.168.0.127 | .1 - .126 | 63        |
-| G-net  | 255.255.255.224 | 192.168.1.0   | 192.168.1.31  | .1 - .30  | 14        |
+| Subred | Máscara         | Dir Subred   | Broadcast    | Rango       | D. Libres |
+|--------|-----------------|--------------|--------------|-------------|-----------|
+| PMS-net| 255.255.255.128 | 20.42.10.0   | 20.42.10.127 | .1 - .126   | 63        |
+| G-net  | 255.255.255.224 | 20.42.10.128 | 20.42.10.159 | .129 - .159 | 14        |
 
 Y las subredes de PMS-net estan conformadas de esta manera:
 
-| Subred | Máscara         | Dir Subred    | Broadcast     | Rango     | D. Libres |
-|--------|-----------------|---------------|---------------|-----------|-----------|
-| P-net  | 255.255.255.224 | 192.168.0.0   | 192.168.0.31  | .1 - .30  | 2         |
-| M-net  | 255.255.255.224 | 192.168.0.32  | 192.168.0.63  | .33 - .62 | 8         |
-| S-net  | 255.255.255.240 | 192.168.0.64  | 192.168.0.79  | .65 - .78 | 5         |
-| MP-net | 255.255.255.252 | 192.168.0.80  | 192.168.0.83  | .81 - .82 | 0         |
-| PS-net | 255.255.255.252 | 192.168.0.84  | 192.168.0.87  | .85 - .86 | 0         |
+| Subred | Máscara         | Dir Subred   | Broadcast    | Rango     | D. Libres |
+|--------|-----------------|--------------|--------------|-----------|-----------|
+| P-net  | 255.255.255.224 | 20.42.10.0   | 20.42.10.31  | .1 - .30  | 2         |
+| M-net  | 255.255.255.224 | 20.42.10.32  | 20.42.10.63  | .33 - .62 | 8         |
+| S-net  | 255.255.255.240 | 20.42.10.64  | 20.42.10.79  | .65 - .78 | 5         |
+| MP-net | 255.255.255.252 | 20.42.10.80  | 20.42.10.83  | .81 - .82 | 0         |
+| PS-net | 255.255.255.252 | 20.42.10.84  | 20.42.10.87  | .85 - .86 | 0         |
+| GI-net | 255.255.255.252 | 20.42.10.91  | 20.42.10.88  | .89 - .90 | 0         |
+| MI-net | 255.255.255.252 | 20.42.10.92  | 20.42.10.95  | .93 - .94 | 0         |
