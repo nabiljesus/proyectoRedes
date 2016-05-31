@@ -30,7 +30,7 @@ Tomando en cuenta que el crecimiento estimado se refiere a la cantidad de host e
 3. Una subred de 15 hosts para Guarenas (5 Actuales y 10 del crecimiento estimado).
 4. Una subred de 21 hosts para Maiquetía (6 Actuales y 15 del crecimiento estimado).
 
-###Analisís de requisitos: Totalización
+###Analisís de requisitos: Totalización.
 
 Estableciendo etiquetas para cada subred, se tiene:
 
@@ -41,27 +41,27 @@ M-net = Maiquetía.
 
 Inicialmente se poseen dos routers con direcciones IP asignadas mediante el ISP CANTV, cada uno con su respectiva subred. 
 
-| Subred      | Nº Hosts    | Crec. Estim.| Routers     | Reservadas  |
-|-------------|-------------|-------------|-------------|-------------|
-| P-net       | 7           | 20          | 1           | 2           |
-| M-net       | 6           | 15          | 1           | 2           |
-| G-net       | 5           | 10          | 1           | 2           |
-| S-net       | 8           | 0           | 1           | 2           |
+| Subred      | Nº Hosts    | Crec. Estim.| Routers     |
+|-------------|-------------|-------------|-------------|
+| P-net       | 7           | 20          | 1           |
+| M-net       | 6           | 15          | 1           |
+| G-net       | 5           | 10          | 1           |
+| S-net       | 8           | 0           | 1           |
 
 Sin embargo, al requerir interconectar cada router, es necesario crear 2 sub-redes nuevas, MP-net y PS-net. Actualizando la tabla anterior de esta manera:
 
-| Subred      | Nº Hosts    | Crec. Estim.| Routers     | Reservadas  |
-|-------------|-------------|-------------|-------------|-------------|
-| P-net       | 7           | 20          | 1           | 2           |
-| M-net       | 6           | 15          | 1           | 2           |
-| G-net       | 5           | 10          | 1           | 2           |
-| S-net       | 8           | 0           | 1           | 2           |
-| MP-net      | 2           | 0           | 0           | 2           |
-| PS-net      | 2           | 0           | 0           | 2           |
+| Subred      | Nº Hosts    | Crec. Estim.| Routers     |
+|-------------|-------------|-------------|-------------|
+| P-net       | 7           | 20          | 1           |
+| M-net       | 6           | 15          | 1           |
+| G-net       | 5           | 10          | 1           |
+| S-net       | 8           | 0           | 1           |
+| MP-net      | 2           | 0           | 0           |
+| PS-net      | 2           | 0           | 0           |
 
-+-------------+-------------+-------------+-------------+-------------+
-|TOTAL        | 30          | 45          | 4           | 12          |
-+-------------+-------------+-------------+-------------+-------------+ 
++-------------+-------------+-------------+-------------+
+|TOTAL        | 30          | 45          | 4           |
++-------------+-------------+-------------+-------------+ 
 
 
 A partir de la tabla anterior, se puede inferir la cantidad de host necesarios para cada supra-red principal, siendo:
@@ -69,21 +69,21 @@ A partir de la tabla anterior, se puede inferir la cantidad de host necesarios p
 *PMS-net = P-net, S-net, M-net, MP-net y PS-net.
 *G-net   = G-net.
 
-| Subred      | Total Req.  | Máscara     | IP's Libres |
-|-------------|-------------|-------------|-------------|
-| PMS-net     | 73          | /25         | 53          |
-| G-net       | 18          | /27         | 12          |
+| Subred      | Nº Hosts    | Crec. Estim.| Routers     | Total Req.  | Máscara     | IP's Libres |
+|-------------|-------------|-------------|-------------|-------------|-------------|-------------|
+| PMS-net     | 25          | 35          | 3           | 63          | /25         | 63          |
+| G-net       | 5           | 10          | 1           | 16          | /27         | 14          |
 
-A pesar de que para la G-net se estan desperdiciando 12 direcciones, utilizar una máscara más pequeña implicaría aumentar los costos al tener que utilizar otro router con máscara de /29 y los otros instrumentos asociados (Conmutadores, cables, interfaces de red). Como se esta considerando la mejor opción costo-rendimiento, se dejarán libres esa cantidad de direcciones con el fin de evitar costos adicionales. Análogamente para la PMS-net.
+A pesar de que para la G-net se estan desperdiciando 14 direcciones, utilizar una máscara más pequeña implicaría aumentar los costos al tener que utilizar otro router con máscara de /30 y los otros instrumentos asociados (Conmutadores, cables, interfaces de red). Como se esta considerando la mejor opción costo-rendimiento, se dejarán libres esa cantidad de direcciones con el fin de evitar costos adicionales. Análogamente para la PMS-net.
 
-###Analisís de requisitos: Información detallada y Resultados
+###Analisís de requisitos: Información detallada y Resultados.
 
 Sin procesar las subredes en PMS-net, se tiene:
 
 | Subred | Máscara         | Dir Subred    | Broadcast     | Rango       | D. Libres |
 |--------|-----------------|---------------|---------------|-------------|-----------|
-| PMS-net| 255.255.255.128 | 192.168.0.0   | 192.168.0.127 | .1 - .126   | 53        |
-| G-net  | 255.255.255.224 | 192.168.0.128 | 192.168.0.159 | .129 - .159 | 12        |
+| PMS-net| 255.255.255.128 | 192.168.0.0   | 192.168.0.127 | .1 - .126   | 63        |
+| G-net  | 255.255.255.224 | 192.168.0.128 | 192.168.0.159 | .129 - .159 | 14        |
 
 Sin embargo, PMS-net y G-net se encuentran físicamente distantes, conectadas a través de un ISP. Siendo conveniente tener todos los host de salud-Caracas en una misma subred, requiriendo seguridad para estas pero al disponer de subredes diferentes, se decidió hacer unso de una intranet VPN site-to-site, basada en el protocolo IPSec. Los routers ciscos (presentes en la herramienta Packet Tracer 6.2) poseen esta tecnología y representan de manera simple la configuración para levantar la intranet VPN anteriormente mencionada, además de existir la documentación suficiente al respecto. Por ende, y como es deseable tener a PMS-net y G-net interconectadas entre sí de una manera segura, se implementó tal.
 
@@ -91,15 +91,15 @@ Sin embargo, al estar ambas en una misma subred a través del VPN implementado, 
 
 | Subred | Máscara         | Dir Subred    | Broadcast     | Rango     | D. Libres |
 |--------|-----------------|---------------|---------------|-----------|-----------|
-| PMS-net| 255.255.255.0   | 192.168.0.0   | 192.168.0.254 | .1 - .254 | 182       |
-| G-net  | 255.255.255.224 | 192.168.1.0   | 192.168.1.31  | .1 - .30  | 12        |
+| PMS-net| 255.255.255.128 | 192.168.0.0   | 192.168.0.127 | .1 - .126 | 63        |
+| G-net  | 255.255.255.224 | 192.168.1.0   | 192.168.1.31  | .1 - .30  | 14        |
 
-Y las subredes de PMS-net estan conformadas de esta manera: [//]: # (Este subneteo es así para ahorrar cables y switches.)
+Y las subredes de PMS-net estan conformadas de esta manera:
 
-| Subred | Máscara         | Dir Subred    | Broadcast     | Rango       | D. Libres |   
-|--------|-----------------|---------------|---------------|-------------|-----------|
-| P-net  | 255.255.255.224 | 192.168.0.0   | 192.168.0.31  | .1 - .30    | 2         |
-| S-net  | 255.255.255.240 | 192.168.0.32  | 192.168.0.47  | .33 - .46   | 5         |
-| PS-net | 255.255.255.252 | 192.168.0.48  | 192.168.0.51  | .49 - .50   | 0         |
-| MP-net | 255.255.255.252 | 192.168.0.64  | 192.168.0.67  | .65 - .66   | 0         |
-| M-net  | 255.255.255.224 | 192.168.0.128 | 192.168.0.159 | .129 - .158 | 8         |
+| Subred | Máscara         | Dir Subred    | Broadcast     | Rango     | D. Libres |
+|--------|-----------------|---------------|---------------|-----------|-----------|
+| P-net  | 255.255.255.224 | 192.168.0.0   | 192.168.0.31  | .1 - .30  | 2         |
+| M-net  | 255.255.255.224 | 192.168.0.32  | 192.168.0.63  | .33 - .62 | 8         |
+| S-net  | 255.255.255.240 | 192.168.0.64  | 192.168.0.79  | .65 - .78 | 5         |
+| MP-net | 255.255.255.252 | 192.168.0.80  | 192.168.0.83  | .81 - .82 | 0         |
+| PS-net | 255.255.255.252 | 192.168.0.84  | 192.168.0.87  | .85 - .86 | 0         |

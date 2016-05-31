@@ -1,0 +1,92 @@
+configure terminal
+
+crypto isakmp policy 1
+
+authentication pre-share
+
+encryption aes 128
+
+group 2
+
+exit
+
+lifetime 96400
+
+end
+
+copy run start
+
+conf term
+
+crypto ipsec transform-set ciscoset esp-aes esp-sha-hmac
+
+exit
+
+access-list 101 permit ip 10.1.1.0 0.0.0.255 192.168.0.0 0.0.0.255
+
+crypto map router1torouter2 10 ipsec-isakmp
+
+set peer 172.30.2.2
+
+match address 101
+
+set transform-set ciscoset
+
+exit
+
+interface fastethernet0/0
+
+crypto map route1torouter2
+
+end
+
+ip route 192.168.0.0 255.255.255.0 172.30.2.2
+
+end
+
+-----------------------------------------------------------------------
+
+http://showipprotocols.blogspot.com/2015/05/site-to-site-ipsec-vpn-configuration.html
+
+
+Summary of configuration steps is in below.
+
+1. Define Transform Sets.
+!
+crypto ipsec transform-set MOSTSECURE esp-aes 256 esp-sha-hmac
+!
+
+2. Define IPSec Crypto Map
+!
+access-list 100 permit ip 10.1.1.0 0.0.0.255 10.2.2.0 0.0.0.255
+!
+crypto map PT-IPSEC 1000 ipsec-isakmp 
+ description Packet Tracer IPSEC Test Crypto Map
+ set peer 172.16.2.1
+ set pfs group5
+ set security-association lifetime seconds 120
+ set transform-set MOSTSECURE 
+ match address 100
+!
+
+3. Define ISAKMP policy to protect previous IPSec Security Association
+!
+crypto isakmp policy 100
+ encr aes 256
+ authentication pre-share
+ group 5
+ lifetime 60
+!
+
+4. Define Authentication Key. In this simple example, I just use simple "Pre-Shared Key" authentication.
+!
+crypto isakmp key samekey address 172.16.2.1
+!
+
+5. Attach IPSec Crypto Map to outgoing interface.
+
+!
+interface Serial0/0/0
+ ip address 172.16.1.1 255.255.255.252
+ crypto map PT-IPSEC
+!
