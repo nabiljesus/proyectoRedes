@@ -17,7 +17,32 @@ De la tabla anterior, se puede apreciar que las dos sedes más distantes son la 
 
 Con el fin de mantener la carga de la red equilibrada, el analisis lógico esperaría poder distribuir las sedes equitativamente entre ambos ISP, sin embargo, dada la distancia física existente entre estas y el costo que implica realizar una conexión física independiente al ISP, se concluyó distribuir las sedes en dos grupos: El primer grupo conformado por las sedes de El Paraiso, San Antonio y Maiquetía, y el segundo conformado únicamente por la sede de Guarenas. 
 
-Una vez establecida la distribución general de la red, fue necesario hacer el subneteo adecuado para diseñar la topología y posterior configuració nde esta, así como el futuro calculo de los costos y las decisiones asociadas a estos. 
+Una vez establecida la distribución general de la red, fue necesario hacer el subneteo adecuado para diseñar la topología y posterior configuració nde esta, así como el futuro calculo de los costos de los implementes, entre otras decisiones asociadas a la implementación de la red. 
+
+
+##Topología
+
+###Planteamiento de modelos
+
+####Modelo 1
+
+<Acá va una imagen>
+
+En este modelo, solo se conecta el router de Maiquetía al ISP. Sin embargo, los costos requeridos para interconectar Guatire-Maiquetía tanto de cable de fibra óptica como trabajos de perforación y mantenimiento, serían muy elevados, por lo que se descartó este modelo.
+
+####Modelo 2
+
+En este modelo, las redes de Guarenas y Maiquetía estan conectadas mediante el ISP, y Maiquetia establece conexión con El Paraiso y con San Antonio. Este modelo fué descartado debido a los costos requeridos para conectar Maiquetía y San Antonio, teniendo como alternativa inmediata el próximo modelo.
+
+####Modelo 3
+
+<Acá va una imagen>
+
+En este modelo, las redes de Guarenas y Maiquetía estan conectadas mediante el ISP, y Maiquetia establece conexión con El Paraiso y este con San Antonio. El router de el paraiso funciona como enlace entre Maiquetía y San Antonio. Este modelo fué el final a utilizar debido a su buena gestión de recursos y eficiencia en la red. Sin embargo, para que pudiese funcionar, fué requerido una defición de enrutamiento definida más adelante.
+
+###Descripción de la topología
+
+Es un bosque por que si 
 
 ##Esquema de direccionamiento
 
@@ -30,25 +55,6 @@ Tomando en cuenta que el crecimiento estimado se refiere a la cantidad de host e
 3. Una subred de 15 hosts para Guarenas (5 Actuales y 10 del crecimiento estimado).
 4. Una subred de 21 hosts para Maiquetía (6 Actuales y 15 del crecimiento estimado).
 
-###Planteamiento de topologías
-
-####Modelo 1
-
-<Acá va una imagen>
-
-En este modelo, solo se conecta el router de Maiquetía al ISP. Sin embargo, los costos requeridos para interconectar Guatire-Maiquetía tanto de cable de fibra óptica como trabajos de perforación y mantenimiento, serían muy elevados, por lo que se descartó este modelo.
-
-####Modelo 2
-
-
-
-En este modelo, las redes de Guarenas y Maiquetía estan conectadas mediante el ISP, y Maiquetia establece conexión con El Paraiso y con San Antonio. Este modelo fué descartado debido a los costos requeridos para conectar Maiquetía y San Antonio, teniendo como alternativa inmediata el próximo modelo.
-
-####Modelo 3
-
-<Acá va una imagen>
-
-En este modelo, las redes de Guarenas y Maiquetía estan conectadas mediante el ISP, y Maiquetia establece conexión con El Paraiso y este con San Antonio. El router de el paraiso funciona como enlace entre Maiquetía y San Antonio. Este modelo fué el final a utilizar debido a su buena gestión de recursos y eficiencia en la red. Sin embargo, para que pudiese funcionar, fué requerido una defición de enrutamiento definida más adelante.
 
 ###Analisís de requisitos: Totalización.
 
@@ -87,7 +93,6 @@ Sin embargo, al requerir interconectar los routers de caracas (sin utilizar cost
 |TOTAL        | 34          | 45          | 4           |
 +-------------+-------------+-------------+-------------+ 
 
-
 A partir de la tabla anterior, se puede inferir la cantidad de host necesarios para cada supra-red principal, siendo:
 
 *PMS-net = P-net, S-net, M-net, MP-net y PS-net.
@@ -100,7 +105,7 @@ A partir de la tabla anterior, se puede inferir la cantidad de host necesarios p
 
 A pesar de que para la G-net se estan desperdiciando 14 direcciones, utilizar una máscara más pequeña implicaría aumentar los costos al tener que utilizar otro router con máscara de /30 y los otros instrumentos asociados (Conmutadores, cables, interfaces de red). Como se esta considerando la mejor opción costo-rendimiento, se dejarán libres esa cantidad de direcciones con el fin de evitar costos adicionales. Análogamente para la PMS-net.
 
-###Analisís de requisitos: Información detallada y Resultados.
+###Analisís de requisitos: Información detallada de las subredes.
 
 Sin procesar las subredes en PMS-net, se tiene:
 
@@ -125,11 +130,70 @@ Y las subredes de PMS-net estan conformadas de esta manera:
 
 ##Enrutamiento
 
+###Descripción del enrutamiento
+
 Debido a la topología escogida, es necesario definir una topología clara para esta... blah blah, estatica por que dinamica no es necesaria y los comandos and so on. 
+
+###Código implantado
+
+
+```
+SANANTONIO(config)#ip route 20.42.10.0 255.255.255.224 20.42.10.85
+SANANTONIO(config)#ip route 20.42.10.32 255.255.255.224 20.42.10.85
+SANANTONIO(config)#ip route 20.42.10.80 255.255.255.252 20.42.10.85
+SANANTONIO(config)#ip route 20.42.10.92 255.255.255.252 20.42.10.85
+SANANTONIO(config)#ip route 20.42.10.128 255.255.255.224 20.42.10.85
+SANANTONIO(config)#ip route 20.42.10.88 255.255.255.252 20.42.10.85
+
+---------------------------
+
+ELPARAISO(config)#ip route 20.42.10.32 255.255.255.224 20.42.10.81
+ELPARAISO(config)#ip route 20.42.10.88 255.255.255.252 20.42.10.81
+ELPARAISO(config)#ip route 20.42.10.92 255.255.255.252 20.42.10.81
+ELPARAISO(config)#ip route 20.42.10.128 255.255.255.224 20.42.10.81
+ELPARAISO(config)#ip route 20.42.10.64 255.255.255.240 20.42.10.86
+
+---------------------------
+
+MAIQUETIA(config)#ip route 20.42.10.0 255.255.255.224 20.42.10.82
+MAIQUETIA(config)#ip route 20.42.10.64 255.255.255.240 20.42.10.82
+MAIQUETIA(config)#ip route 20.42.10.84 255.255.255.252 20.42.10.82
+MAIQUETIA(config)#ip route 20.42.10.88 255.255.255.252 20.42.10.94
+MAIQUETIA(config)#ip route 20.42.10.128 255.255.255.224 20.42.10.94
+
+--------------------------
+
+CANTV(config)#ip route 20.42.10.0 255.255.255.224 20.42.10.93
+CANTV(config)#ip route 20.42.10.32 255.255.255.224 20.42.10.93
+CANTV(config)#ip route 20.42.10.64 255.255.255.224 20.42.10.93
+CANTV(config)#ip route 20.42.10.64 255.255.255.240 20.42.10.93
+CANTV(config)#ip route 20.42.10.80 255.255.255.252 20.42.10.93
+CANTV(config)#ip route 20.42.10.84 255.255.255.252 20.42.10.93
+
+
+--------------------------
+
+GUARENAS(config)#ip route 20.42.10.0 255.255.255.224 20.42.10.89
+GUARENAS(config)#ip route 20.42.10.32 255.255.255.224 20.42.10.89
+GUARENAS(config)#ip route 20.42.10.64 255.255.255.240 20.42.10.89
+GUARENAS(config)#ip route 20.42.10.80 255.255.255.252 20.42.10.89
+GUARENAS(config)#ip route 20.42.10.84 255.255.255.252 20.42.10.89
+GUARENAS(config)#ip route 20.42.10.92 255.255.255.252 20.42.10.89
+```
+
+##Direccionamiento IP
+
+###Descripción del direccionamiento IP
+
+
+DHCP pq crecimiento y bajones de luz como emergencia and stuff
+
 
 Se utiliz'o DHCP ya que esto facilita la configuraci'on en presencia de redes grandes o que poseen crecimiento, adicionalmente a esto en ninguna de las subredes diseñadas para salud-Caracas se ofrecen servicios web, por esta raz'on no es necesario fijar direcciones IP est'aticas.
 
 A continuaci'on se muestran los comandos empleados para la las configuraciones DHCP para los routers en cada una de las subredes conectadas a las computadoras.
+
+###Código implantado
 
 ```
 GUARENAS(config)#ip dhcp pool GNET
@@ -165,15 +229,15 @@ SANANTONIO(dhcp-config)#dns-server 8.8.8.8
 SANANTONIO(dhcp-config)#network 20.42.10.64 255.255.255.240
 SANANTONIO(dhcp-config)#exit
 SANANTONIO(config)#do wr
-
 ```
 
-##Asignación de Dir. a los host
+##Dispositivos requeridos
 
-DHCP pq crecimiento y bajones de luz como emergencia and stuff
+###Requerimientos mínimos
 
 
-##Costos
+###Costos
+
 
 Switch Tp-link 24 Puertos 10/100mbps Tl-sf1024 Rackeable
 Bs. 104.85000
