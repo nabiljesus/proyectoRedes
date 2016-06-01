@@ -125,7 +125,48 @@ Y las subredes de PMS-net estan conformadas de esta manera:
 
 ##Enrutamiento
 
-Debido a la topología escogida, es necesario definir una topología clara para esta... blah blah, estatica por que dinamica no es necesaria y los comandos and so on.
+Debido a la topología escogida, es necesario definir una topología clara para esta... blah blah, estatica por que dinamica no es necesaria y los comandos and so on. 
+
+Se utiliz'o DHCP ya que esto facilita la configuraci'on en presencia de redes grandes o que poseen crecimiento, adicionalmente a esto en ninguna de las subredes diseñadas para salud-Caracas se ofrecen servicios web, por esta raz'on no es necesario fijar direcciones IP est'aticas.
+
+A continuaci'on se muestran los comandos empleados para la las configuraciones DHCP para los routers en cada una de las subredes conectadas a las computadoras.
+
+```
+GUARENAS(config)#ip dhcp pool GNET
+GUARENAS(dhcp-config)#network 20.42.10.128 255.255.255.224
+GUARENAS(dhcp-config)#default-router 20.42.10.129
+GUARENAS(dhcp-config)#dns-server 8.8.8.8
+GUARENAS(dhcp-config)#exit
+GUARENAS(config)#dowr
+
+---------------------------
+
+MAIQUETIA(config-if)#ip dhcp pool MNET
+MAIQUETIA(dhcp-config)#network 20.42.10.32 255.255.255.224
+MAIQUETIA(dhcp-config)#default-router 20.42.10.33
+MAIQUETIA(dhcp-config)#dns-server 8.8.8.8
+MAIQUETIA(dhcp-config)#exit
+MAIQUETIA(config)#do wr
+
+---------------------------
+
+ELPARAISO(config-if)#ip dhcp pool PNET
+ELPARAISO(dhcp-config)#network 20.42.10.0 255.255.255.224
+ELPARAISO(dhcp-config)#dns-server 8.8.8.8
+ELPARAISO(dhcp-config)#default-router 20.42.10.1
+ELPARAISO(dhcp-config)#exit
+ELPARAISO(config)#do wr
+
+---------------------------
+
+SANANTONIO(config-if)#ip dhcp pool SNET
+SANANTONIO(dhcp-config)#default-router 20.42.10.65
+SANANTONIO(dhcp-config)#dns-server 8.8.8.8
+SANANTONIO(dhcp-config)#network 20.42.10.64 255.255.255.240
+SANANTONIO(dhcp-config)#exit
+SANANTONIO(config)#do wr
+
+```
 
 ##Asignación de Dir. a los host
 
@@ -133,5 +174,8 @@ DHCP pq crecimiento y bajones de luz como emergencia and stuff
 
 
 ##Costos
+
+Switch Tp-link 24 Puertos 10/100mbps Tl-sf1024 Rackeable
+Bs. 104.85000
 
 de swiches and stuff
