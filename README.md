@@ -25,7 +25,7 @@ Una vez establecida la distribución general de la red, fue necesario hacer el s
 
 ####Modelo 1
 
-<Acá va una imagen>
+![Modelo alterno costoso](ModeloAlternoCostosos.png "Modelo alterno costoso")
 
 En este modelo, solo se conecta el enrutador de Maiquetía al ISP. Sin embargo, los costos requeridos para interconectar Guatire-Maiquetía tanto de cable de fibra óptica como trabajos de perforación y mantenimiento, serían muy elevados, por lo que se descartó este modelo.
 
@@ -35,7 +35,7 @@ En este modelo, las redes de Guarenas y Maiquetía estan conectadas mediante el 
 
 ####Modelo 3
 
-<Acá va una imagen>
+![Modelo final](ModeloFinal.jpg "Modelo final")
 
 En este modelo, las redes de Guarenas y Maiquetía estan conectadas mediante el ISP, y Maiquetia establece conexión con El Paraiso y este con San Antonio. El enrutador de el paraiso funciona como enlace entre Maiquetía y San Antonio. Este modelo fué el final a utilizar debido a su buena gestión de recursos y eficiencia en la red. Sin embargo, para que pudiese funcionar, fué requerido una defición de enrutamiento definida más adelante.
 
