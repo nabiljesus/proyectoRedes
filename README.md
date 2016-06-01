@@ -1,5 +1,4 @@
-# proyectoRedes 1
-
+#Marco teorico
 
 ##Analisis Preliminar
 
@@ -25,7 +24,7 @@ Una vez establecida la distribución general de la red, fue necesario hacer el s
 
 ####Modelo 1
 
-![Modelo alterno costoso](ModeloAlternoCostosos.png "Modelo alterno costoso")
+![Modelo alterno costoso](ModeloAlternoCostosos.png "Modelo 1 \- alterno costoso")
 
 En este modelo, solo se conecta el enrutador de Maiquetía al ISP. Sin embargo, los costos requeridos para interconectar Guatire-Maiquetía tanto de cable de fibra óptica como trabajos de perforación y mantenimiento, serían muy elevados, por lo que se descartó este modelo.
 
@@ -35,7 +34,7 @@ En este modelo, las redes de Guarenas y Maiquetía estan conectadas mediante el 
 
 ####Modelo 3
 
-![Modelo final](ModeloFinal.png "Modelo final")
+![Modelo final](ModeloFinal.png "Modelo 3 \- final")
 
 En este modelo, las redes de Guarenas y Maiquetía estan conectadas mediante el ISP, y Maiquetia establece conexión con El Paraiso y este con San Antonio. El enrutador de el paraiso funciona como enlace entre Maiquetía y San Antonio. Este modelo fué el final a utilizar debido a su buena gestión de recursos y eficiencia en la red. Sin embargo, para que pudiese funcionar, fué requerido una defición de enrutamiento definida más adelante.
 
@@ -239,7 +238,14 @@ SANANTONIO(config)#do wr
 
 ##Dispositivos requeridos
 
-###Requerimientos mínimos
+###Requerimientos
+
+cada cosa swicht, router y cables
+considermos gigagit para mejor salida
+fibra para interconectar guarenas y maiquetia
+
+
+
 
 
 ###Costos
@@ -249,3 +255,12 @@ Switch Tp-link 24 Puertos 10/100mbps Tl-sf1024 Rackeable
 Bs. 104.85000
 
 de swiches and stuff
+
+
+##Explicaciones adicionales
+
+*hola  soy lista no ordenada
+
+hablar tipo de descartados inalimbricas por costos de tarjetas y antes y demas
+descartada vpn por necesidad de mantenimiento
+y otras y el por que
