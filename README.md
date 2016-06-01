@@ -30,7 +30,29 @@ Tomando en cuenta que el crecimiento estimado se refiere a la cantidad de host e
 3. Una subred de 15 hosts para Guarenas (5 Actuales y 10 del crecimiento estimado).
 4. Una subred de 21 hosts para Maiquetía (6 Actuales y 15 del crecimiento estimado).
 
+###Planteamiento de topologías
+
+####Modelo 1
+
+<Acá va una imagen>
+
+En este modelo, solo se conecta el router de Maiquetía al ISP. Sin embargo, los costos requeridos para interconectar Guatire-Maiquetía tanto de cable de fibra óptica como trabajos de perforación y mantenimiento, serían muy elevados, por lo que se descartó este modelo.
+
+####Modelo 2
+
+
+
+En este modelo, las redes de Guarenas y Maiquetía estan conectadas mediante el ISP, y Maiquetia establece conexión con El Paraiso y con San Antonio. Este modelo fué descartado debido a los costos requeridos para conectar Maiquetía y San Antonio, teniendo como alternativa inmediata el próximo modelo.
+
+####Modelo 3
+
+<Acá va una imagen>
+
+En este modelo, las redes de Guarenas y Maiquetía estan conectadas mediante el ISP, y Maiquetia establece conexión con El Paraiso y este con San Antonio. El router de el paraiso funciona como enlace entre Maiquetía y San Antonio. Este modelo fué el final a utilizar debido a su buena gestión de recursos y eficiencia en la red. Sin embargo, para que pudiese funcionar, fué requerido una defición de enrutamiento definida más adelante.
+
 ###Analisís de requisitos: Totalización.
+
+En cuanto al direccionamiento IP se refiere, se decidió comprar el rango de direcciones IP del ISP CANTV 20.42.10.0/24 debido a que se representa a una clínica de alto alcance y se disponen los medios para ello. A su vez, si se desea a futuro construir otra sede de salud-Caracas, se dispondrían de direcciones IP para asignar a la nueva sede.
 
 Estableciendo etiquetas para cada subred, se tiene:
 
@@ -82,13 +104,7 @@ A pesar de que para la G-net se estan desperdiciando 14 direcciones, utilizar un
 
 Sin procesar las subredes en PMS-net, se tiene:
 
-| Subred | Máscara         | Dir Subred   | Broadcast    | Rango       | D. Libres |
-|--------|-----------------|--------------|--------------|-------------|-----------|
-| PMS-net| 255.255.255.128 | 20.42.10.0   | 20.42.10.127 | .1 - .126   | 63        |
-| G-net  | 255.255.255.224 | 20.42.10.128 | 20.42.10.159 | .129 - .159 | 14        |
-
-Sin embargo, PMS-net y G-net se encuentran físicamente distantes, conectadas a través de un ISP. Siendo conveniente tener todos los host de salud-Caracas en una misma subred, y al ser una pudiente cadena hospitalaria, se contrató del ISP Cantv la subred 220.42.10.0/24 y 
-Sin embargo, al estar ambas en una misma subred a través del VPN implementado, se dividió la subred privada del router de M-net y el de G-net de manera de que no se solapen entre sí. Luego, la intranet generada quedó organizada de esta manera:
+Luego de aplicar la técnica de LVSM para distribución de direcciones IP en estas subredes, se tiene: 
 
 | Subred | Máscara         | Dir Subred   | Broadcast    | Rango       | D. Libres |
 |--------|-----------------|--------------|--------------|-------------|-----------|
@@ -104,5 +120,13 @@ Y las subredes de PMS-net estan conformadas de esta manera:
 | S-net  | 255.255.255.240 | 20.42.10.64  | 20.42.10.79  | .65 - .78 | 5         |
 | MP-net | 255.255.255.252 | 20.42.10.80  | 20.42.10.83  | .81 - .82 | 0         |
 | PS-net | 255.255.255.252 | 20.42.10.84  | 20.42.10.87  | .85 - .86 | 0         |
-| GI-net | 255.255.255.252 | 20.42.10.91  | 20.42.10.88  | .89 - .90 | 0         |
+| GI-net | 255.255.255.252 | 20.42.10.88  | 20.42.10.91  | .89 - .90 | 0         |
 | MI-net | 255.255.255.252 | 20.42.10.92  | 20.42.10.95  | .93 - .94 | 0         |
+
+##Enrutamiento
+
+Debido a la topología escogida, es necesario definir una topología clara para esta... blah blah, estatica por que dinamica no es necesaria y los comandos and so on.
+
+##Asignación de Dir. a los host
+
+DHCP pq crecimiento y bajones de luz como emergencia and stuff

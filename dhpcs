@@ -1,0 +1,33 @@
+GUARENAS(config)#ip dhcp pool GNET
+GUARENAS(dhcp-config)#network 20.42.10.128 255.255.255.224
+GUARENAS(dhcp-config)#default-router 20.42.10.129
+GUARENAS(dhcp-config)#dns-server 8.8.8.8
+GUARENAS(dhcp-config)#exit
+GUARENAS(config)#dowr
+
+---------------------------
+
+MAIQUETIA(config-if)#ip dhcp pool MNET
+MAIQUETIA(dhcp-config)#network 20.42.10.32 255.255.255.224
+MAIQUETIA(dhcp-config)#default-router 20.42.10.33
+MAIQUETIA(dhcp-config)#dns-server 8.8.8.8
+MAIQUETIA(dhcp-config)#exit
+MAIQUETIA(config)#do wr
+
+---------------------------
+
+ELPARAISO(config-if)#ip dhcp pool PNET
+ELPARAISO(dhcp-config)#network 20.42.10.0 255.255.255.224
+ELPARAISO(dhcp-config)#dns-server 8.8.8.8
+ELPARAISO(dhcp-config)#default-router 20.42.10.1
+ELPARAISO(dhcp-config)#exit
+ELPARAISO(config)#do wr
+
+---------------------------
+
+SANANTONIO(config-if)#ip dhcp pool SNET
+SANANTONIO(dhcp-config)#default-router 20.42.10.65
+SANANTONIO(dhcp-config)#dns-server 8.8.8.8
+SANANTONIO(dhcp-config)#network 20.42.10.64 255.255.255.240
+SANANTONIO(dhcp-config)#exit
+SANANTONIO(config)#do wr
