@@ -130,3 +130,8 @@ Debido a la topología escogida, es necesario definir una topología clara para 
 ##Asignación de Dir. a los host
 
 DHCP pq crecimiento y bajones de luz como emergencia and stuff
+
+
+##Costos
+
+de swiches and stuff
