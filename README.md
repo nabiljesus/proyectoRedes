@@ -1,8 +1,15 @@
-#Marco teorico
+---
+include-before:
+    - \include{portada.tex} 
+---
 
-##Analisis Preliminar
+\newpage
 
-Distancias -aproximadas- entre las sedes de salud-Caracas:
+#Marco teórico
+
+##Análisis preliminar
+
+Distancias -aproximadas- entre las sedes de Salud-Caracas:
 
 |             | El Paraiso  | San Antonio | Guarenas    | Maiquetía   | 
 |-------------|-------------|-------------|-------------|-------------|
@@ -12,11 +19,13 @@ Distancias -aproximadas- entre las sedes de salud-Caracas:
 | Maiquetía   | 28km        | 47.8km      | 65.4km      |             |
 
 
-De la tabla anterior, se puede apreciar que las dos sedes más distantes son la de Maiquetía y la Guarenas, por lo que estas estarían conectadas a través del ISP para ahorrar en lo posible los costos referentes a la conexión física entre estas, tal y como indica el planteamiento del problema. 
+De la tabla anterior, se puede apreciar que las dos sedes más distantes son las de Maiquetía y Guarenas, por lo que estas estarían conectadas a través del ISP para ahorrar en lo posible los costos referentes a la conexión física entre estas, tal y como indica el planteamiento del problema. 
 
-Con el fin de mantener la carga de la red equilibrada, el analisis lógico esperaría poder distribuir las sedes equitativamente entre ambos ISP, sin embargo, dada la distancia física existente entre estas y el costo que implica realizar una conexión física independiente al ISP, se concluyó distribuir las sedes en dos grupos: El primer grupo conformado por las sedes de El Paraiso, San Antonio y Maiquetía, y el segundo conformado únicamente por la sede de Guarenas. 
+Con el fin de mantener la carga de la red equilibrada, el analisis lógico esperaría poder distribuir las sedes equitativamente entre ambos ISP, sin embargo, dada la distancia física existente entre estas y el costo que implica realizar una conexión física independiente al ISP, se decidió distribuir las sedes en dos grupos: El primer grupo conformado por las sedes de El Paraiso, San Antonio y Maiquetía, y el segundo conformado únicamente por la sede de Guarenas. 
 
-Una vez establecida la distribución general de la red, fue necesario hacer el subneteo adecuado para diseñar la topología y posterior configuració nde esta, así como el futuro calculo de los costos de los implementes, entre otras decisiones asociadas a la implementación de la red. 
+Una vez establecida la distribución general de la red, fue necesario hacer *subnetting* para diseñar la topología y posteriormente configurarla evitando desperdiciar direcciones IP, adicionalmente a esto se realizó un calculo de los costos de implementación y se tomaron una serie de decisiones para realización de este plan de proyecto.
+
+\newpage
 
 ##Topología
 
@@ -24,23 +33,28 @@ Una vez establecida la distribución general de la red, fue necesario hacer el s
 
 ####Modelo 1
 
-![Modelo alterno costoso](ModeloAlternoCostosos.png "Modelo 1 \- alterno costoso")
 
-En este modelo, solo se conecta el enrutador de Maiquetía al ISP. Sin embargo, los costos requeridos para interconectar Guatire-Maiquetía tanto de cable de fibra óptica como trabajos de perforación y mantenimiento, serían muy elevados, por lo que se descartó este modelo.
+En este modelo, solo se conecta el enrutador de Maiquetía al ISP. Sin embargo, los costos requeridos para interconectar Guatire-Maiquetía asociados al cable de fibra óptica, los trabajos de perforación y el mantenimiento, serían muy elevados, por lo que se descartó este modelo.
+
+![Modelo alterno costoso](ModeloAlternoCostosos.png "Modelo 1 \- alterno costoso")
+\
+
 
 ####Modelo 2
 
-En este modelo, las redes de Guarenas y Maiquetía estan conectadas mediante el ISP, y Maiquetia establece conexión con El Paraiso y con San Antonio. Este modelo fué descartado debido a los costos requeridos para conectar Maiquetía y San Antonio, teniendo como alternativa inmediata el próximo modelo.
+En este modelo, las redes de Guarenas y Maiquetía estan conectadas mediante el ISP, mientras que Maiquetia establece conexión con El Paraiso y San Antonio. Este modelo fué descartado debido a los costos requeridos para conectar Maiquetía y San Antonio, teniendo como alternativa inmediata el próximo modelo.
 
 ####Modelo 3
 
+En este modelo, las redes de Guarenas y Maiquetía estan conectadas mediante el ISP, Maiquetía establece conexión con El Paraiso y este con San Antonio. El enrutador de El Paraiso funciona como enlace entre Maiquetía y San Antonio. Este modelo es el que se seleccionó debido a su buena gestión de recursos y eficiencia en la red. Sin embargo, para que pudiese funcionar, fue requerida la defición de enrutamiento explicada más adelante.
+
 ![Modelo final](ModeloFinal.png "Modelo 3 \- final")
 
-En este modelo, las redes de Guarenas y Maiquetía estan conectadas mediante el ISP, y Maiquetia establece conexión con El Paraiso y este con San Antonio. El enrutador de el paraiso funciona como enlace entre Maiquetía y San Antonio. Este modelo fué el final a utilizar debido a su buena gestión de recursos y eficiencia en la red. Sin embargo, para que pudiese funcionar, fué requerido una defición de enrutamiento definida más adelante.
+\newpage
 
 ###Descripción de la topología
 
-La topología escogida para implantar la red de salud-Caracas está basada en la topología de tipo Árbol. Como nodo raiz, se tiene al enrutador de CANTV, y los hijos inmediatos a estos son el enrutador de GUARENAS y el enrutador de MAIQUETIA. En el siguiente nivel se encuentran el conmutador de maiquetía, el enrutador de ELPARAISO y el conmutador de Guarenas. Luego, se tienen a los hosts de Maiquetía, los host de Guarenas, el conmutador de El Paraiso y el enrutador de SANANTONIO. Luego de esto, están presente los host de El Paraiso y el conmutador de San Antonio. En el último nivel, estan presentes los hosts de San Antonio.
+La topología escogida para implantar la red de Salud-Caracas está basada en la topología de tipo Árbol. Como nodo raíz, se tiene al enrutador de CANTV, y los hijos inmediatos a éste son el enrutador *GUARENAS* y el enrutador *MAIQUETIA*. En el siguiente nivel se encuentran el conmutador de Maiquetía, el enrutador *ELPARAISO* y el conmutador de Guarenas. Luego, se tienen a los hosts de Maiquetía, los host de Guarenas, el conmutador de El Paraiso y el enrutador *SANANTONIO*. Luego de esto, están presente los host de El Paraiso y el conmutador de San Antonio. En el último nivel, estan presentes los hosts de San Antonio.
 
 Para el caso particular de esta implantación, los ordenadores representan las hojas del árbol ya que no tendrán hijos y los conmutadores o los enrutadores representan el nodo padre de un árbol subsiguiente.
 
@@ -56,9 +70,9 @@ Tomando en cuenta que el crecimiento estimado se refiere a la cantidad de host e
 4. Una subred de 21 hosts para Maiquetía (6 Actuales y 15 del crecimiento estimado).
 
 
-###Analisís de requisitos: Totalización.
+###Analisís de requisitos: totalización.
 
-En cuanto al direccionamiento IP se refiere, se decidió comprar el rango de direcciones IP del ISP CANTV 20.42.10.0/24 debido a que se representa a una clínica de alto alcance y se disponen los medios para ello. A su vez, si se desea a futuro construir otra sede de salud-Caracas, se dispondrían de direcciones IP para asignar a la nueva sede.
+En cuanto al direccionamiento IP se refiere, se decidió comprar el rango de direcciones IP del ISP CANTV asociadas a 20.42.10.0/24 ya que la red es para una clínica de gran alcance y se disponen los medios para ello. A su vez, si se desea a futuro construir otra sede de Salud-Caracas, se dispondrían de direcciones IP para asignar a la nueva sede.
 
 Estableciendo etiquetas para cada subred, se tiene:
 
@@ -69,16 +83,22 @@ M-net = Maiquetía.
 
 Inicialmente se poseen dos enrutadors con direcciones IP asignadas mediante el ISP CANTV, cada uno con su respectiva subred. 
 
-| Subred      | Nº Hosts    | Crec. Estim.| enrutadors     |
+| Subred      | Nº Hosts    | Crec. Estim.| Enrutadores |
 |-------------|-------------|-------------|-------------|
 | P-net       | 7           | 20          | 1           |
 | M-net       | 6           | 15          | 1           |
 | G-net       | 5           | 10          | 1           |
 | S-net       | 8           | 0           | 1           |
 
-Sin embargo, al requerir interconectar los enrutadors de caracas (sin utilizar costos adicionales en cables al tomar a El Paraiso como nodo central), es necesario crear 2 sub-redes nuevas, MP-net y PS-net, a su vez que son requeridas otras dos para las conexiones de Guarenas al ISP y del ISP a Maiquetia. Actualizando la tabla anterior de esta manera:
+Sin embargo, al requerir interconectar los enrutadors de Caracas (sin incurrir en costos adicionales para cables al tomar a El Paraiso como nodo central), es necesario crear 2 sub-redes nuevas, MP-net y PS-net, a su vez son requeridas otras dos para las conexiones de Guarenas al ISP y del ISP a Maiquetia. 
 
-| Subred      | Nº Hosts    | Crec. Estim.| enrutadors     |
+\
+Actualizando la tabla anterior de esta manera:
+\
+\
+
+
+| Subred      | Nº Hosts    | Crec. Estim. | Enrutadores |
 |-------------|-------------|-------------|-------------|
 | P-net       | 7           | 20          | 1           |
 | M-net       | 6           | 15          | 1           |
@@ -95,38 +115,43 @@ Sin embargo, al requerir interconectar los enrutadors de caracas (sin utilizar c
 
 A partir de la tabla anterior, se puede inferir la cantidad de host necesarios para cada supra-red principal, siendo:
 
-*PMS-net = P-net, S-net, M-net, MP-net y PS-net.
-*G-net   = G-net.
+* PMS-net = P-net, S-net, M-net, MP-net y PS-net.
+* G-net   = G-net.
 
-| Subred      | Nº Hosts    | Crec. Estim.| enrutadors     | Total Req.  | Máscara     | IP's Libres |
-|-------------|-------------|-------------|-------------|-------------|-------------|-------------|
-| PMS-net     | 25          | 35          | 3           | 63          | /25         | 63          |
-| G-net       | 5           | 10          | 1           | 16          | /27         | 14          |
+|Subred| Nº Hosts|Crec. Estim.|Enrutadores|Req. total |Máscara| IP's Libres |
+|------|---------|------------|-----------|-----------|-------|-------------|
+| PMS-net| 25    | 35         | 3         | 63        | /25 [^1]|  63         |
+| G-net  | 5     | 10         | 1         | 16        | /27 [^2]| 14          |
 
-A pesar de que para la G-net se estan desperdiciando 14 direcciones, utilizar una máscara más pequeña implicaría aumentar los costos al tener que utilizar otro enrutador con máscara de /30 y los otros instrumentos asociados (Conmutadores, cables, interfaces de red). Como se esta considerando la mejor opción costo-rendimiento, se dejarán libres esa cantidad de direcciones con el fin de evitar costos adicionales. Análogamente para la PMS-net.
+
+
+A pesar de que para la G-net se están desperdiciando 14 direcciones, utilizar una máscara más pequeña implicaría aumentar los costos al tener que utilizar otro enrutador con máscara 255.255.255.252 y los otros instrumentos asociados (conmutadores, cables, interfaces de red). Como se esta considerando la mejor opción costo-rendimiento, se dejará libre ese rango de direcciones con el fin de evitar costos adicionales. Análogamente para la PMS-net.
+
+\newpage
 
 ###Analisís de requisitos: Información detallada de las subredes.
 
 Sin procesar las subredes en PMS-net, se tiene:
 
-Luego se aplicó la técnica de LVSM para distribución de direcciones IP en estas subredes, debido a que existen diferencias notables en cuanto a la cantidad de hosts requeridas por cada subred como para realizar una distribución estática. Luego de aplicar esta técnica, se obtuvo: 
+Luego se aplicó la técnica de LVSM para la distribución de direcciones IP en estas subredes, debido a que existen diferencias notables en cuanto a la cantidad de hosts requeridas por cada subred como para realizar una distribución estática. Luego de aplicar esta técnica, se obtuvo: 
 
-| Subred | Máscara         | Dir Subred   | Broadcast    | Rango       | D. Libres |
-|--------|-----------------|--------------|--------------|-------------|-----------|
-| PMS-net| 255.255.255.128 | 20.42.10.0   | 20.42.10.127 | .1 - .126   | 63        |
-| G-net  | 255.255.255.224 | 20.42.10.128 | 20.42.10.159 | .129 - .159 | 14        |
+| Subred | Máscara | Dir Subred | Broadcast  | Rango | D. Libres |
+|--------|----------|-----------|------------|-----------|-----------|
+|PMS-net|255.255.255.128|20.42.10.0| 20.42.10.127|.1 - .126[^3]| 63      |
+| G-net |255.255.255.224|20.42.10.128|20.42.10.159|.129 - .159| 14   |
 
-Y las subredes de PMS-net estan conformadas de esta manera:
 
-| Subred | Máscara         | Dir Subred   | Broadcast    | Rango     | D. Libres |
-|--------|-----------------|--------------|--------------|-----------|-----------|
-| P-net  | 255.255.255.224 | 20.42.10.0   | 20.42.10.31  | .1 - .30  | 2         |
-| M-net  | 255.255.255.224 | 20.42.10.32  | 20.42.10.63  | .33 - .62 | 8         |
-| S-net  | 255.255.255.240 | 20.42.10.64  | 20.42.10.79  | .65 - .78 | 5         |
-| MP-net | 255.255.255.252 | 20.42.10.80  | 20.42.10.83  | .81 - .82 | 0         |
-| PS-net | 255.255.255.252 | 20.42.10.84  | 20.42.10.87  | .85 - .86 | 0         |
-| GI-net | 255.255.255.252 | 20.42.10.88  | 20.42.10.91  | .89 - .90 | 0         |
-| MI-net | 255.255.255.252 | 20.42.10.92  | 20.42.10.95  | .93 - .94 | 0         |
+Y las subredes de la PMS-net estan conformadas de esta manera:
+
+|Subred|  Máscara       | Dir Subred | Broadcast    | Rango |D. Libres|
+|-----|-----------------|------------|--------------|-----------|-------|
+|P-net| 255.255.255.224 |20.42.10.0  | 20.42.10.31  | .1 - .30[^4]| 2     |
+|M-net| 255.255.255.224 |20.42.10.32 | 20.42.10.63  | .33 - .62 | 8     |
+|S-net| 255.255.255.240 |20.42.10.64 | 20.42.10.79  | .65 - .78 | 5     |
+|MP-net|255.255.255.252 |20.42.10.80 | 20.42.10.83  | .81 - .82 | 0     |
+|PS-net|255.255.255.252 |20.42.10.84 | 20.42.10.87  | .85 - .86 | 0     |
+|GI-net|255.255.255.252 |20.42.10.88 | 20.42.10.91  | .89 - .90 | 0     |
+|MI-net|255.255.255.252 |20.42.10.92 | 20.42.10.95  | .93 - .94 | 0     |
 
 
 ##Enrutamiento
@@ -190,11 +215,7 @@ GUARENAS(config)#ip route 20.42.10.92 255.255.255.252 20.42.10.89
 
 ###Descripción del direccionamiento IP
 
-
-DHCP pq crecimiento y bajones de luz como emergencia and stuff
-
-
-Se utilizó DHCP ya que esto facilita la configuración en presencia de subredes grandes o que poseen un crecimiento estimado considerable. Adicionalmente a lo anterior, en ninguna de las subredes diseñadas para salud-Caracas se ofrecen servicios fuera de los routers, por lo que no era necesario establecer direcciones estáticas en estas. Además, representa un ahorro en la configuración de la red en la que se disponga de este servidor DHCP en el momento en el que se adquieran nuevos ordenadores y se conecten a la red: ni estos, ni el servidor, requerian alguna configuración adicional a la proporcionada por defecto.
+Se utilizó DHCP ya que esto facilita la configuración en presencia de subredes grandes o que poseen un crecimiento estimado considerable. Adicionalmente a esto, en ninguna de las subredes diseñadas para Salud-Caracas se ofrecen servicios fuera de los routers, por lo que no es necesario establecer direcciones estáticas en estas. Además, representa un ahorro en la configuración de la red en la que se disponga de este servidor DHCP en el momento en el que se adquieran nuevos ordenadores y se conecten a la red: ni estos, ni el servidor, requerirán alguna configuración adicional a la proporcionada inicialmente.
 
 ###Código implantado
 
@@ -206,7 +227,7 @@ GUARENAS(dhcp-config)#network 20.42.10.128 255.255.255.224
 GUARENAS(dhcp-config)#default-enrutador 20.42.10.129
 GUARENAS(dhcp-config)#dns-server 8.8.8.8
 GUARENAS(dhcp-config)#exit
-GUARENAS(config)#dowr
+GUARENAS(config)#do wr
 
 ---------------------------
 
@@ -240,12 +261,31 @@ SANANTONIO(config)#do wr
 
 ###Requerimientos
 
-cada cosa swicht, router y cables
-considermos gigagit para mejor salida
-fibra para interconectar guarenas y maiquetia
+Los dispotivos utilizados en nuestra implementación incluyen:
 
+* 4 enrutadores todos con al menos un conector de ethernet (preferiblemente gigagit)
+    - 2 con 2 conectores de fibra óptica
+    - 2 con 1 conector de fibra  óptica
+* 5 conmutadores o *switches* con las siguientes especificaciones
+    - 1 de 16 puertos para la subred de Guatire
+    - 1 de 24 puertos para la subred de El Paraiso (soporte para 22 hosts)
+    - 1 de 6 puertos como auxiliar para la subred anterior (soporte para los 5 hosts faltantes)
+    - 1 de 24 puertos para la subred Maiquetía
+    - 1 de 16 puetos para la subred de San Antonio
+* Bobina de cable de par trenzado categoría 5 (metraje dependiente de las distancias entre hosts)
+* Bobina de cable de par trenzado categoría 6 (entre 15 y 30 metros, dependiente de las distancias enrutador-conmutador y conmutador-conmutador)
+* Inicialmente 52 Conectores RJ45 categoría 5 , 90 adicionales para cubrir el crecimiento de las red.
+    -  52 para los hosts iniciales
+    -  90 para los hosts del crecimiento estimado
+* 8 conectores RJ45 categoría para las conexiones entre conmutadores y enrutadores
+* Bobina de fibra óptica 2 hilos multimodo (metraje dependiente de las conexiones existentes que el ISP provea)
+* 6 conectores de fibra óptica multimodo de 2 hilos, *pigtail upc* 
 
+Cada *switch* debería tener al menos un puerto gigabit para conectar con su respectivo *router*. 
 
+El conmutador de El Paraiso que conecta un conjuntos de hosts, el router y segundo conmutador pequeño (de 6 puertos) requiere de 2 puertos gigabit.
+
+La cantidad de metros de cable entre cada host y su conmutador más cercano es variable, además depende del tamaño de cada centro médico en el que se está integrando la red. Suponiendo distancias de 3 ó 10 metros como media se requerirían al menos 78 metros de cable, y a lo más 260 como distancias iniciales. Luego del crecimiento esperado se utilizaría entre 213 y 710 metros de cable categoría 5. El plan incial de red requiere de 52 conectores RJ45 y al final del crecimiento esperado se habrán usado 142 para ensamblar los cables de red.
 
 
 ###Costos
@@ -264,3 +304,9 @@ de swiches and stuff
 hablar tipo de descartados inalimbricas por costos de tarjetas y antes y demas
 descartada vpn por necesidad de mantenimiento
 y otras y el por que
+
+
+[^1]:Representación decimal 255.255.255.128
+[^2]:Representación decimal 255.255.255.224
+[^3]:Todos rangos poseen el prefijo 20.42.10
+[^4]:Todos rangos poseen el prefijo 20.42.10
