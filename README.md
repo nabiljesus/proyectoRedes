@@ -1,9 +1,5 @@
----
-include-before:
-    - \include{portada.tex} 
----
-
 \newpage
+
 
 #Marco teórico
 
@@ -273,11 +269,11 @@ Los dispotivos utilizados en nuestra implementación incluyen:
     - 1 de 24 puertos para la subred Maiquetía
     - 1 de 16 puetos para la subred de San Antonio
 * Bobina de cable de par trenzado categoría 5 (metraje dependiente de las distancias entre hosts)
-* Bobina de cable de par trenzado categoría 6 (entre 15 y 30 metros, dependiente de las distancias enrutador-conmutador y conmutador-conmutador)
 * Inicialmente 52 Conectores RJ45 categoría 5 , 90 adicionales para cubrir el crecimiento de las red.
     -  52 para los hosts iniciales
     -  90 para los hosts del crecimiento estimado
-* 8 conectores RJ45 categoría para las conexiones entre conmutadores y enrutadores
+* Bobina de cable de par trenzado categoría 6
+* 10 conectores RJ45 categoría 6 para las conexiones entre conmutadores y enrutadores
 * Bobina de fibra óptica 2 hilos multimodo (metraje dependiente de las conexiones existentes que el ISP provea)
 * 6 conectores de fibra óptica multimodo de 2 hilos, *pigtail upc* 
 
@@ -287,24 +283,76 @@ El conmutador de El Paraiso que conecta un conjuntos de hosts, el router y segun
 
 La cantidad de metros de cable entre cada host y su conmutador más cercano es variable, además depende del tamaño de cada centro médico en el que se está integrando la red. Suponiendo distancias de 3 ó 10 metros como media se requerirían al menos 78 metros de cable, y a lo más 260 como distancias iniciales. Luego del crecimiento esperado se utilizaría entre 213 y 710 metros de cable categoría 5. El plan incial de red requiere de 52 conectores RJ45 y al final del crecimiento esperado se habrán usado 142 para ensamblar los cables de red.
 
+Para las instalaciones de cableado entre routers (fibra óptica) no se conoce con exactitud la cantidad de conexiones entre preexistentes que provee el ISP de CANTV, ya que podría o no existir las conexiones entre una central de CANTV y un lugar cercano a los routers de Maiquetía y Guarenas, por lo que presentamos dos planes de requerimientos.
+
+Como plan básico, para ambos planes se debe colocar cableado entre San Antonio y El Paraiso, y entre éste y Maiquetía, lo que representa (de acuerdo a la sección de nuestro análisis preliminar) una cantidad total de 58.3 km (suma de ambos segmentos). Dependiendo de las conexiones de CANTV se podría requererir entre 20 metros para conectar los centros de Salud-Caracas en Maiquetía y Guarenas al *router* más cercano del ISP, o utilizar, en el peor escenario posible 65 km de fibra óptica para conectar ambas instalaciones pasando por el router de CANTV.
+CANTV debería proveer de esta última conexión, por lo que el último plan de requerimiento no será tomado en cuenta. De esta manera se utilizarán unicamente 58.5 kilómetros de la fibra óptica ya especificada.
+
+Cada cable de fibra óptica será ensamblado con 2 conectores pigtail.
+
+Por último para realizar las conexiones entre los enrutadores de cada ciudad y su conmutador asociado y entre conmutadores (en El Paraíso) y suponiendo distancias de 5 metros entre cada uno de estos, se requerirán 25 metros de cable categoría 6, los cuales serán ensamblados con conectores RJ45 cat6.
+
+\newpage
 
 ###Costos
 
+Los costos aproximados obtenidos los portales de compras por internet mercadolibre y alibaba (a tasa SIMADI) arrojan la siguiente tabla de presupuesto:
 
-Switch Tp-link 24 Puertos 10/100mbps Tl-sf1024 Rackeable
-Bs. 104.85000
+| Item | Costo (Bs) | Cantidad| Total (Bs) |
+|:--------------------------|:---------:|:---------:|:----------------:|
+| Switch TP-link 16 puertos gigabit   | 149.000  |  2 |  29.9998       |
+| Switch cisco 24 puertos    2 gigabit| 219.000  |  2 |  438.000       |
+| Switch 8 puertos gigabit| 32.900  |  1 |  32.900       |
+| Enrutador, 2 puertos de fibra optica y gigabit | ?  | ?  | ?   |
+| Enrutador, 1 puerto  de fibra optica y gigabit | ?  | ?  | ?   |
 
-de swiches and stuff
 
+Realizando los cálculos con a SIMADI del 4/6/2016 (549 Bs por $) para el cable de fibra óptica
+
+| Item                      |Costo (Bs) | Cantidad  | Total (Bs)          |
+|:--------------------------|:---------:|:---------:|:-------------------:|
+| Pigtails                  |   5.990   |     6     |        35.940       |
+| RJ45 cat6 blindado        |   650     |     10    |         6.500       |
+| RJ45 cat5 (100 unidades)  |   3.250   |     1     |         3.250       |
+| Bobina cat5E 305 metros   |   36.990  |     1     |        36.990       |
+| Bobina cat6  por metro    |   600     |     25    |        15.990       |
+| Fibra óptica por km       | 54.900    |    58.5   |     3.211.650       |
+
+
+La compra de la bobina de categoría 5 de 305 metros cubrirá el requerimiento inicial para los hosts y (potencialmente) cubrirá la demanda de los hosts nuevos (todo depende de las distancias explicadas en la sección anterior).
 
 ##Explicaciones adicionales
+* Se descartó el uso de de redes inalámbricas para los centros médicos ya que esto implicaría el uso de *access point* y tarjetas inalámbricas para cada hosts, lo cual implicaría un gran aumento en el costo total de la implementación de este proyecto.
+* Se utilizaron cable categoría 6 entres conmutadores y enrutadores para mejorar las velocidades de conexión sin aumentar drásticamente los costos al hacer uso de este cable para cada uno de los hosts, además esto implicaría instalar un gran número de tarjetas de red *gigabit* en vez de utilizar las *fast-ethernet* que usualmente incluyen las computadoras.
+* Se decidió que importación de la fibra óptica era necesaria ya que reducía los costros en gran medida.
 
-*hola  soy lista no ordenada
+# Referencias
 
-hablar tipo de descartados inalimbricas por costos de tarjetas y antes y demas
-descartada vpn por necesidad de mantenimiento
-y otras y el por que
+## Mercadolibre
+Portal de ventas en línea en Venezuela
 
+* Swith Tp-Link de 16 puertos gigabit
+    - http://articulo.mercadolibre.com.ve/MLV-463531660-switch-gigabit-de-16-puertos-tp-link-tl-sg1016-_JM
+* Switch cisco de 24 puertos (2 gigabit)
+    - http://articulo.mercadolibre.com.ve/MLV-462458481-switch-cisco-sf200-24-24-puertos-10100-2-puertos-gigabit-_JM
+* Switch Advantek de 8 puertos gigabit
+    - http://articulo.mercadolibre.com.ve/MLV-465748796-switch-gigabit-advantek-8-puertos-101001000-netpro-serie-_JM
+* Conectores de fibra óptica
+    - http://articulo.mercadolibre.com.ve/MLV-465234972-pigtails-fibra-optica-multimodo-sc-upc-azul-_JM
+* Conectores RJ45 categoría 6
+    - http://articulo.mercadolibre.com.ve/MLV-465127459-conector-rj45-cat6-blindado-lanpro-gigabit-red-internet-_JM
+* Conectores RJ45 categoría 5
+    - http://articulo.mercadolibre.com.ve/MLV-465432656-conector-rj-45-cat-5e-paquete-de-100-unidades-_JM
+* Bobina de cable categoría 5 (305 metros)
+    - http://articulo.mercadolibre.com.ve/MLV-465913392-bobina-cable-utp-cat5e-305-mts-rj45-cctv-redes-seguridad-lan-_JM
+* Cable categoría 6 por metro
+    - http://articulo.mercadolibre.com.ve/MLV-459248117-cable-utp-categoria-6-100-cobre-por-metro-_JM
+
+## Alibaba
+Portal de ventas al mayor por internet de proveedores ubicados en Asia
+
+* Cable de fibra óptica por kilómetro
+    - http://www.alibaba.com/product-detail/Outdoor-direct-buried-amored-fiber-optic_213229352.html?spm=a2700.7724838.0.0.CzmEbD&s=p 
 
 [^1]:Representación decimal 255.255.255.128
 [^2]:Representación decimal 255.255.255.224
