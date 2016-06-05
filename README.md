@@ -306,6 +306,9 @@ Los costos aproximados obtenidos los portales de compras por internet mercadolib
 | Enrutador, 2 puertos de fibra optica y gigabit | ?  | ?  | ?   |
 | Enrutador, 1 puerto  de fibra optica y gigabit | ?  | ?  | ?   |
 
++-------------+---------------+
+|TOTAL        | ??            |
++-------------+---------------+ 
 
 Realizando los cálculos con a SIMADI del 4/6/2016 (549 Bs por $) para el cable de fibra óptica
 
@@ -318,6 +321,11 @@ Realizando los cálculos con a SIMADI del 4/6/2016 (549 Bs por $) para el cable 
 | Bobina cat6  por metro    |   600     |     25    |        15.990       |
 | Fibra óptica por km       | 54.900    |    58.5   |     3.211.650       |
 
+Sin contar los gatos por fibra óptica el valor para las conexiones será de Bs. 98.670, incluyendola obtendremos el siguiente monto:
+
++-------------+---------------+
+|TOTAL        | 3.310.320     |
++-------------+---------------+
 
 La compra de la bobina de categoría 5 de 305 metros cubrirá el requerimiento inicial para los hosts y (potencialmente) cubrirá la demanda de los hosts nuevos (todo depende de las distancias explicadas en la sección anterior).
 
