@@ -1,0 +1,195 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev/Debian) (preloaded format=pdftex 2016.6.1)  1 JUN 2016 14:17
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**portada.tex
+(./portada.tex
+! Undefined control sequence.
+l.6 \begin
+          {titlepage}
+? 
+! Undefined control sequence.
+l.8 \setlength
+              {\hoffset}{-1in}
+? 
+! Missing number, treated as zero.
+<to be read again> 
+                   }
+l.8 \setlength{\hoffset}
+                        {-1in}
+? 
+! Illegal unit of measure (pt inserted).
+<to be read again> 
+                   }
+l.8 \setlength{\hoffset}
+                        {-1in}
+? 
+! Undefined control sequence.
+l.9 \setlength
+              {\voffset}{-1in}
+? 
+! Missing number, treated as zero.
+<to be read again> 
+                   }
+l.9 \setlength{\voffset}
+                        {-1in}
+? 
+! Illegal unit of measure (pt inserted).
+<to be read again> 
+                   }
+l.9 \setlength{\voffset}
+                        {-1in}
+? 
+! Undefined control sequence.
+l.10 \setlength
+               {\topmargin}{1.5cm}
+? 
+! Undefined control sequence.
+l.10 \setlength{\topmargin
+                          }{1.5cm}
+? 
+! Undefined control sequence.
+l.11 \setlength
+               {\headheight}{0.5cm}
+? 
+! Undefined control sequence.
+l.11 \setlength{\headheight
+                           }{0.5cm}
+? 
+! Undefined control sequence.
+l.12 \setlength
+               {\headsep}{1cm}
+? 
+! Undefined control sequence.
+l.12 \setlength{\headsep
+                        }{1cm}
+? 
+! Undefined control sequence.
+l.13 \setlength
+               {\oddsidemargin}{3cm}
+? 
+! Undefined control sequence.
+l.13 \setlength{\oddsidemargin
+                              }{3cm}
+? 
+! Undefined control sequence.
+l.14 \setlength
+               {\evensidemargin}{3cm}
+? 
+! Undefined control sequence.
+l.14 \setlength{\evensidemargin
+                               }{3cm}
+? 
+! Undefined control sequence.
+l.15 \setlength
+               {\footskip}{1.5cm}
+? 
+! Undefined control sequence.
+l.15 \setlength{\footskip
+                         }{1.5cm}
+? 
+! Undefined control sequence.
+l.16 \enlargethispage
+                     {1cm}
+? 
+! Undefined control sequence.
+l.19 \fontsize
+              {12pt}{14pt}
+? 
+! Undefined control sequence.
+l.20 \selectfont
+                
+? 
+! Undefined control sequence.
+l.22 \begin
+           {center}
+? 
+! Undefined control sequence.
+l.24 \includegraphics
+                     [height=2cm]{logo.png}
+? 
+! Undefined control sequence.
+l.26 \vspace
+            {0.5cm}
+? 
+Runaway argument?
+ Departamento de computaci\'on\\ Redes de Computadores I CI-4835E\\ 
+! Paragraph ended before \\ was complete.
+<to be read again> 
+                   \par 
+l.31 
+     
+? 
+! Undefined control sequence.
+l.32 \vspace
+            {3.5cm}
+? 
+! Undefined control sequence.
+l.34 \fontseries
+                {bx}
+? 
+! Undefined control sequence.
+l.35 \fontsize
+              {17.28pt}{21pt}
+? 
+! Undefined control sequence.
+l.36 \selectfont
+                
+? 
+Runaway argument?
+ Salud Caracas 
+! Paragraph ended before \\ was complete.
+<to be read again> 
+                   \par 
+l.40 
+     
+? 
+! Undefined control sequence.
+l.41 \fontseries
+                {m}
+? 
+! Undefined control sequence.
+l.42 \fontsize
+              {12pt}{14pt}
+? 
+! Undefined control sequence.
+l.43 \selectfont
+                
+? 
+! Undefined control sequence.
+l.45 \vspace
+            {.6cm}
+? 
+! Undefined control sequence.
+l.49 \vspace
+            {.4cm}
+? 
+! Undefined control sequence.
+l.52 \vspace
+            {3.5cm}
+? 
+Runaway argument?
+ Kity Alvarez\\ Alumnos: \\ Nabil M\'arquez\\ Javier L\'opez 
+! Paragraph ended before \\ was complete.
+<to be read again> 
+                   \par 
+l.59 
+     
+? 
+! Undefined control sequence.
+l.60 \vspace
+            {2cm}
+? 
+! Undefined control sequence.
+l.63 \vspace
+            {1cm}
+? 
+[1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] )</usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb>
+Output written on portada.pdf (1 page, 18243 bytes).
+PDF statistics:
+ 12 PDF objects out of 1000 (max. 8388607)
+ 7 compressed objects within 1 object stream
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+

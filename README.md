@@ -158,6 +158,7 @@ Debido a la topología escogida, es necesario definir un enrutamiento adecuado p
 
 A pesar de disponer de la opción de utilizar enrutamiento dinámico, se decidió utilizar enrutamiento estático ya que la carga extra que requiere el enrutamiento dinámico es innecesaria para la topología escogida. Así, cada enrutador se encarga o bien de enviar el paquete a un host de su subred o de enviarlo al siguiente enrutador que contenga la tabla de enrutamiento de la subred a la que va dirigida el paquete recibido o conozca a que enrutador reenviarlo. 
 
+Con el propósito de no afectar la funcionalidad del modelo lógico planteado utilizando la herramienta *Packet Tracer*, el router que representa a CANTV posee un enrutamiento estático, sin embargo, para efectos de su equivalencia en la topología en el mundo real, este enrutamiento sería ofrecido y configurado por el ISP.
 
 ###Código implantado
 
@@ -343,6 +344,7 @@ El costo del conjunto de direcciones IP públicas utilizadas no está contemplad
 * Se utilizaron cable categoría 6 entre conmutadores y enrutadores para mejorar las velocidades de conexión y ancho de banda, sin aumentar drásticamente los costos al hacer uso de este cable para cada uno de los hosts, además esto implicaría instalar un gran número de tarjetas de red *gigabit* en vez de utilizar las *fast-ethernet* que usualmente incluyen las computadoras.
 * Se decidió realizar la importación de fibra óptica ya que reducía los costros en gran medida. Mientras que la importación de los routers fue motivada por la ausencia de este producto en el mercado nacional.
 * No se incluyó el costo de la instalación de los cables de fibra óptico y sus canales.
+* A pesar de existir otros tipos topológicos como el basado en malla, el mixto o el anillo, se optó por el presente debido a sus bajos costos en comparación. Colocar una conexion entre Maiquetía y San Antonio o San Antonio y Guarenas,realizando la redistribución ip requerida y el enrutamiento adecuado, se ofrecería una mejor tolerancia a fallos ya que existe mayor interconexión entre las sburedes, pero los costos aumentaría en gran nivel debido a la distancias físicas entre cada nodo. Se sacrifica la recuperación de errores para economizar los costos, sin embargo, la topología actual admite futuras modificaciones según sea requerido.
 
 # Referencias
 
