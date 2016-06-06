@@ -335,11 +335,14 @@ El total de conectividad y dispotivos de conexión será de Bs 5.618.418
 
 La compra de la bobina de categoría 5 de 305 metros cubrirá el requerimiento inicial para los hosts y (potencialmente) cubrirá la demanda de los hosts nuevos (todo depende de las distancias explicadas en la sección anterior).
 
+El costo del conjunto de direcciones IP públicas utilizadas no está contemplado en el presupuesto, ya que CANTV no ofrece precios en su portal.
+
+
 ##Explicaciones adicionales
-* Se descartó el uso de de redes inalámbricas para los centros médicos ya que esto implicaría el uso de *access point* y tarjetas inalámbricas para cada hosts, lo cual implicaría un gran aumento en el costo total de la implementación de este proyecto.
-* Se utilizaron cable categoría 6 entres conmutadores y enrutadores para mejorar las velocidades de conexión sin aumentar drásticamente los costos al hacer uso de este cable para cada uno de los hosts, además esto implicaría instalar un gran número de tarjetas de red *gigabit* en vez de utilizar las *fast-ethernet* que usualmente incluyen las computadoras.
+* Se descartó el uso de de redes inalámbricas para los centros médicos ya que esto implicaría el uso de *access point* con alcance metropolitano y tarjetas inalámbricas para cada hosts, lo cual implicaría un gran aumento en el costo total de la implementación de este proyecto.
+* Se utilizaron cable categoría 6 entre conmutadores y enrutadores para mejorar las velocidades de conexión y ancho de banda, sin aumentar drásticamente los costos al hacer uso de este cable para cada uno de los hosts, además esto implicaría instalar un gran número de tarjetas de red *gigabit* en vez de utilizar las *fast-ethernet* que usualmente incluyen las computadoras.
 * Se decidió realizar la importación de fibra óptica ya que reducía los costros en gran medida. Mientras que la importación de los routers fue motivada por la ausencia de este producto en el mercado nacional.
-* 
+* No se incluyó el costo de la instalación de los cables de fibra óptico y sus canales.
 
 # Referencias
 
