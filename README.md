@@ -211,7 +211,11 @@ GUARENAS(config)#ip route 20.42.10.92 255.255.255.252 20.42.10.89
 
 ###Descripción del direccionamiento IP
 
-Se utilizó DHCP ya que esto facilita la configuración en presencia de subredes grandes o que poseen un crecimiento estimado considerable. Adicionalmente a esto, en ninguna de las subredes diseñadas para Salud-Caracas se ofrecen servicios fuera de los routers, por lo que no es necesario establecer direcciones estáticas en estas. Además, representa un ahorro en la configuración de la red en la que se disponga de este servidor DHCP en el momento en el que se adquieran nuevos ordenadores y se conecten a la red: ni estos, ni el servidor, requerirán alguna configuración adicional a la proporcionada inicialmente.
+Se utilizó DHCP ya que esto facilita la configuración en presencia de subredes grandes o que poseen un crecimiento estimado considerable. Adicionalmente a esto, en ninguna de las subredes diseñadas para Salud-Caracas se ofrecen servicios fuera de los routers, por lo que no es necesario establecer direcciones estáticas en estas. 
+
+Otra ventaja de esta decisión es el hecho de que representa un ahorro en la configuración de la red en la que se disponga de este servidor DHCP en el momento en el que se adquieran nuevos ordenadores y se conecten a la red: ni estos, ni el servidor, requerirán alguna configuración adicional a la proporcionada inicialmente. Adicionalmente, debido a las fallas en el servicio eléctrico del país los ordenadores están propensos al deterioro, de esta forma su reemplazo ser'ia mucho más simple, de forma análoga al caso anteriormente expuesto. 
+
+
 
 ###Código implantado
 
@@ -296,21 +300,21 @@ Por último para realizar las conexiones entre los enrutadores de cada ciudad y 
 
 ###Costos
 
+Realizando los cálculos con a SIMADI del 4/6/2016 (549 Bs por $) para el cable de fibra óptica y los routes.
+
 Los costos aproximados obtenidos los portales de compras por internet mercadolibre y alibaba (a tasa SIMADI) arrojan la siguiente tabla de presupuesto:
 
 | Item | Costo (Bs) | Cantidad| Total (Bs) |
 |:--------------------------|:---------:|:---------:|:----------------:|
-| Switch TP-link 16 puertos gigabit   | 149.000  |  2 |  29.9998       |
-| Switch cisco 24 puertos    2 gigabit| 219.000  |  2 |  438.000       |
-| Switch 8 puertos gigabit| 32.900  |  1 |  32.900       |
-| Enrutador, 2 puertos de fibra optica y gigabit | ?  | ?  | ?   |
-| Enrutador, 1 puerto  de fibra optica y gigabit | ?  | ?  | ?   |
+| Switch TP-link 16 puertos gigabit    | 149.000  |  2 |  29.9998          |
+| Switch cisco 24 con 2 puertos gigabit| 219.000  |  2 |  438.000          |
+| Switch 8 puertos gigabit             | 32.900   |  1 |  32.900           |
+| Enrutador, con puertos de fibra optica y gigabit | 384.300| 4 |1.537.200 |
 
 +-------------+---------------+
-|TOTAL        | ??            |
+|TOTAL        | 2.308.098     |
 +-------------+---------------+ 
 
-Realizando los cálculos con a SIMADI del 4/6/2016 (549 Bs por $) para el cable de fibra óptica
 
 | Item                      |Costo (Bs) | Cantidad  | Total (Bs)          |
 |:--------------------------|:---------:|:---------:|:-------------------:|
@@ -327,12 +331,15 @@ Sin contar los gatos por fibra óptica el valor para las conexiones será de Bs.
 |TOTAL        | 3.310.320     |
 +-------------+---------------+
 
+El total de conectividad y dispotivos de conexión será de Bs 5.618.418
+
 La compra de la bobina de categoría 5 de 305 metros cubrirá el requerimiento inicial para los hosts y (potencialmente) cubrirá la demanda de los hosts nuevos (todo depende de las distancias explicadas en la sección anterior).
 
 ##Explicaciones adicionales
 * Se descartó el uso de de redes inalámbricas para los centros médicos ya que esto implicaría el uso de *access point* y tarjetas inalámbricas para cada hosts, lo cual implicaría un gran aumento en el costo total de la implementación de este proyecto.
 * Se utilizaron cable categoría 6 entres conmutadores y enrutadores para mejorar las velocidades de conexión sin aumentar drásticamente los costos al hacer uso de este cable para cada uno de los hosts, además esto implicaría instalar un gran número de tarjetas de red *gigabit* en vez de utilizar las *fast-ethernet* que usualmente incluyen las computadoras.
-* Se decidió que importación de la fibra óptica era necesaria ya que reducía los costros en gran medida.
+* Se decidió realizar la importación de fibra óptica ya que reducía los costros en gran medida. Mientras que la importación de los routers fue motivada por la ausencia de este producto en el mercado nacional.
+* 
 
 # Referencias
 
@@ -356,11 +363,37 @@ Portal de ventas en línea en Venezuela
 * Cable categoría 6 por metro
     - http://articulo.mercadolibre.com.ve/MLV-459248117-cable-utp-categoria-6-100-cobre-por-metro-_JM
 
+# Amazon
+Portal de ventas norteamericano
+
+* Cisco CISCO2911/K9 2911 2900 Series Integrated Services Router 
+    - http://www.amazon.com/gp/offer-listing/B002ZCUCLS/ref=olp_f_refurbished?ie=UTF8&f_refurbished=true&f_used=true&f_usedAcceptable=true&f_usedGood=true&f_usedLikeNew=true&f_usedVeryGood=true&qid=1465217516&sr=8-1
+
+    
 ## Alibaba
 Portal de ventas al mayor por internet de proveedores ubicados en Asia
 
 * Cable de fibra óptica por kilómetro
     - http://www.alibaba.com/product-detail/Outdoor-direct-buried-amored-fiber-optic_213229352.html?spm=a2700.7724838.0.0.CzmEbD&s=p 
+
+## CANTV
+* Planes y servicios
+    - http://www.cantv.com.ve/seccion.asp?pid=1&sid=607
+
+## Referencias teóricas
+
+* Configuración de VPN 
+    - http://ecovi.uagro.mx/ccna4/course/files/7.1.2.4%20Packet%20Tracer%20-%20Configuring%20VPNs%20%28Optional%29%20Instructions.pdf
+    - http://showipprotocols.blogspot.com/2015/05/site-to-site-ipsec-vpn-configuration.html
+    - http://securitywing.com/cisco-vpn-configuration/
+* Referencia de packet-tracer
+    - http://www.cisco.com/c/en/us/td/docs/security/asa/asa80/configuration/guide/conf_gd/site2sit.pdf
+
+* Configuración de DHCP
+    - https://www.youtube.com/watch?v=yudNmI4p1dU
+    - https://fpomicro.wordpress.com/2011/11/29/configurar-dhcp-en-router-cisco-packet-tracer-5-3/
+    - http://www.mws.cz/network/packet-tracer/router-dhcp/
+
 
 [^1]:Representación decimal 255.255.255.128
 [^2]:Representación decimal 255.255.255.224
