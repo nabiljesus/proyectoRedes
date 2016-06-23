@@ -10,7 +10,7 @@
 #include <time.h>
 #include <string.h>
 
-#define SERVER_PORT 4321
+// #define SERVER_PORT 4321
 #define BUFFER_LEN 1024
 
 #define PARKING_LOT_SIZE 200
@@ -24,13 +24,15 @@ struct ticket
     struct tm enter_time; /* Time when car checked-in     */
 };
  
+FILE *entranceLog, *exitLog;
 
 int main(int argc, char *argv[])
 {
-
     int ticket_number     = 0;
     int free_parking_lots = PARKING_LOT_SIZE;
-    int listen_port;
+    int listen_port; // Port we will be listening
+    
+    int status;      // Auxiliary to check procedure returning values
 
     int sockfd;
     struct sockaddr_in server_address;
@@ -50,11 +52,35 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
+    if      (strcmp("-i",argv[1]) == 0 ) entranceLog = fopen(argv[2],"w");
+    else if (strcmp("-i",argv[3]) == 0 ) entranceLog = fopen(argv[4],"w");
+    else if (strcmp("-i",argv[5]) == 0 ) entranceLog = fopen(argv[6],"w");
+    else {
+        perror("Error: No se ha especificado la bitacora de entrada");
+        exit(0);
+    }
+
+    if      (strcmp("-o",argv[1]) == 0 ) exitLog = fopen(argv[2],"w");
+    else if (strcmp("-o",argv[3]) == 0 ) exitLog = fopen(argv[4],"w");
+    else if (strcmp("-o",argv[5]) == 0 ) exitLog = fopen(argv[6],"w");
+    else {
+        perror("Error: No se ha especificado la bitacora de salida");
+        exit(0);
+    }
+
+
     /* Server initialization */
-    server_address.sin_family      = AF_INET;            /* usa host byte order */
-    server_address.sin_port        = htons(listen_port); /* usa network byte order */
-    server_address.sin_addr.s_addr = INADDR_ANY;         /* escuchamos en todas las IPs */
-    bzero(&(server_address.sin_zero), 8); /* rellena con ceros el resto de la estructura */
+    server_address.sin_family      = AF_INET;            
+    server_address.sin_port        = htons(listen_port); 
+    server_address.sin_addr.s_addr = INADDR_ANY;         
+    bzero(&(server_address.sin_zero), 8); 
+
+    status = bind(sockfd, (struct sockaddr *)&server_address, sizeof(struct sockaddr));
+
+    if (status == -1) {
+        perror("Error: no se pudo realizar el bind");
+        exit(2);
+    }
 
     // Estados
     while (1){
