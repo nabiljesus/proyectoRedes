@@ -47,8 +47,9 @@ int main(int argc, char *argv[])
     numbytes = recvfrom(sockfd, buf, 
                         BUFFER_LEN, 0, 
                         (struct sockaddr *)&their_addr,
-                        (socklen_t *)&addr_len)
-    if ( numbytes == -1) {
+                        (socklen_t *)&addr_len);
+    
+    if ( numbytes == -1 ) {
         perror("recvfrom");
         exit(3);
     }

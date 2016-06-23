@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #define SERVER_PORT 4321
 #define BUFFER_LEN 1024
+
 int main(int argc, char *argv[])
 {
     int sockfd; /* descriptor a usar con el socket */
@@ -39,8 +40,8 @@ int main(int argc, char *argv[])
                     argv[2],
                     strlen(argv[2]),
                     0,(struct sockaddr *)&their_addr,
-                    sizeof(struct sockaddr))
-    
+                    sizeof(struct sockaddr));
+
     if ( numbytes == -1) {
         perror("sendto");
         exit(2);
