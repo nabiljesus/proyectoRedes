@@ -6,7 +6,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
-#define SERVER_PORT 4321
+#define SERVER_PORT 20684
 #define BUFFER_LEN 1024
 
 int main(int argc, char *argv[])
@@ -16,9 +16,8 @@ int main(int argc, char *argv[])
     struct hostent *he; /* para obtener nombre del host */
     int numbytes; /* conteo de bytes a escribir */
     int aux = 0;
-    char ope[1];
-    char myPort[5];
-    char mySerial[3];
+    int myPort;
+    char myOpSerial[4];
 
     if (argc != 9) {
         printf ("Uso: sem_cli -d <nombre_módulo_atención> -p <puerto_sem_svr> -c <op> -i <identificación_vehiculo> \n");
@@ -55,7 +54,8 @@ int main(int argc, char *argv[])
         exit(1);
     }
     else{
-        strcpy(ope, argv[aux]); //copiando la operacion
+        printf("%s\n", argv[aux]);
+        strcpy(myOpSerial, argv[aux]); //copiando la operacion
     }
 
     /* Verificamos que el puerto este definido en un rango apropiado*/
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
     else{
-        strcpy(myPort, argv[aux]); //copiando el puerto
+        myPort=atoi(argv[aux]); //copiando el puerto
     }
 
     /* Verificamos que el serial sea exista y sea correcto*/
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
     else{
-        strcpy(mySerial, argv[aux]); //copiando el serial+1
+        strcat(myOpSerial, argv[aux]); //copiando el serial+1
     }
 
     /* Creamos el socket */
@@ -103,13 +103,13 @@ int main(int argc, char *argv[])
 
     /* a donde mandar */
     their_addr.sin_family = AF_INET; /* usa host byte order */
-    their_addr.sin_port = htons(SERVER_PORT); /* usa network byte order */
+    their_addr.sin_port = htons(myPort); /* usa network byte order */
     their_addr.sin_addr = *((struct in_addr *)he->h_addr);
     bzero(&(their_addr.sin_zero), 8); /* pone en cero el resto */
     /* enviamos el mensaje */
     numbytes=sendto(sockfd,
-                    argv[2],
-                    strlen(argv[2]),
+                    myOpSerial,
+                    strlen(myOpSerial),
                     0,(struct sockaddr *)&their_addr,
                     sizeof(struct sockaddr));
 
