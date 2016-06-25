@@ -43,7 +43,6 @@ void * wait_answer(){
     
     addr_len = sizeof(struct sockaddr);
 
-    while(1) {
         // printf("Pase \n");
         printf("Esperando datos ....\n");
         numbytes = recvfrom(sockfd, buf, 
@@ -68,7 +67,6 @@ void * wait_answer(){
         last_message->client = client_addr.sin_addr.s_addr;
         advance_writer(&cb);*/
         // printf("Escribi\n");
-    }
 
 }
 
@@ -179,7 +177,7 @@ int main(int argc, char *argv[])
             tries++;                /* incrementa el contador y vuelve a intentar */
             fprintf(stderr, "Error al conectarse con el servidor. Intento %d de 3.\n",tries+1);
             //exit(2);
-            if (tries==3){
+            if (tries==3){ 
                 perror("Tiempo de espera agotado.");
                 exit(2);
             }
