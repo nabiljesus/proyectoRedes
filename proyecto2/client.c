@@ -6,13 +6,55 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
-#define SERVER_PORT 20684
-#define BUFFER_LEN 1024
+//#define SERVER_PORT 20684
+//#define BUFFER_LEN 1024
+
+typedef int bool;
+#define true 1
+#define false 0
+
+bool answerClient(struct in_addr addr, char info[], bool notFull){
+
+    int socks; /* descriptor a usar con el socket */
+    struct sockaddr_in out_addr; /* almacenara la direccion IP y numero de puerto del cliente */
+    int sentbytes; /* conteo de bytes a escribir */
+    char BoolDateTime[13];
+
+    out_addr.sin_family = AF_INET; /* usa host byte order */
+    out_addr.sin_port = htons(20683); /* usa network byte order */
+    out_addr.sin_addr = addr;
+    bzero(&(out_addr.sin_zero), 8); /* pone en cero el resto */
+    snprintf (BoolDateTime, 1, "%d",notFull);
+    strcat(BoolDateTime, info); 
+    printf("%s\n", BoolDateTime);
+    /* enviamos el mensaje */
+
+    /* Creamos el socket */
+    if ((socks = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
+        perror("socket");
+        exit(2);
+    }
+
+    sentbytes=sendto(socks,
+                    BoolDateTime,
+                    strlen(BoolDateTime),
+                    0,(struct sockaddr *)&out_addr,
+                    sizeof(struct sockaddr));
+
+    if ( sentbytes == -1) {
+        perror("sendto");
+        exit(2);
+    }
+    printf("enviados %d bytes hacia %s\n",sentbytes,inet_ntoa(out_addr.sin_addr));
+    /* cierro socket */
+    close(socks);
+    exit (0);
+}
 
 int main(int argc, char *argv[])
 {
     int sockfd; /* descriptor a usar con el socket */
-    struct sockaddr_in their_addr;; /* almacenara la direccion IP y numero de puerto del servidor */
+    struct sockaddr_in their_addr; /* almacenara la direccion IP y numero de puerto del servidor */
     struct hostent *he; /* para obtener nombre del host */
     int numbytes; /* conteo de bytes a escribir */
     int aux = 0;
@@ -119,9 +161,11 @@ int main(int argc, char *argv[])
     }
     printf("enviados %d bytes hacia %s\n",numbytes,inet_ntoa(their_addr.sin_addr));
     /* cierro socket */
+    answerClient(their_addr.sin_addr,"301019941628",0);
     close(sockfd);
     exit (0);
 }
+
 
 
 
