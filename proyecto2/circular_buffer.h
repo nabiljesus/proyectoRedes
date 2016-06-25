@@ -17,6 +17,13 @@ void init_buffer(struct circular_buffer * cb,int size);
 /* Leaving 1 empty slot */
 inline int its_full(struct circular_buffer cb);
 
+/* Get element to write over*/
+inline void *get_writer(struct circular_buffer  cb);
+
+/* Advance writer one position */
+inline void advance_writer(struct circular_buffer * cb);
+
+
 /* Check if boths elements point to the same thing */
 int its_empty(struct circular_buffer cb);
 

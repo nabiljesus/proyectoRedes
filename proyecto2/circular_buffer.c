@@ -23,8 +23,18 @@ int its_empty(struct circular_buffer cb){
 
 /* write to the buffer */
 void write_cb(struct circular_buffer * cb,void *element){
-    free(cb->buffer[cb->writer]);
+    // free(cb->buffer[cb->writer]);
     cb->buffer[cb->writer] = element;
+    cb->writer = (cb->writer + 1) % MAXSIZE ;
+}
+
+/* Get element to write over*/
+inline void *get_writer(struct circular_buffer  cb){
+    return cb.buffer[cb.writer];
+}
+
+/* Advance writer one position */
+inline void advance_writer(struct circular_buffer * cb){
     cb->writer = (cb->writer + 1) % MAXSIZE ;
 }
 
