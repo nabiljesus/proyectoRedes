@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     else if (strcmp("-d",argv[5]) == 0 ) aux = 6;
     else if (strcmp("-d",argv[7]) == 0 ) aux = 8;
     else {
-        perror("Error: No se ha especificado la direccion de destino.");
+        printf("Error: No se ha especificado la direccion de destino.\n");
         exit(0);
     }
 
@@ -45,12 +45,12 @@ int main(int argc, char *argv[])
     else if (strcmp("-c",argv[5]) == 0 ) aux = 6;
     else if (strcmp("-c",argv[7]) == 0 ) aux = 8;
     else {
-        perror("Error: No se ha indicado la operación a realizar.");
+        printf("Error: No se ha indicado la operación a realizar.\n");
         exit(0);
     }
 
     if (strcmp("e",argv[aux])!=0 && strcmp("s",argv[aux])!=0) {
-        perror("Error: Operación desconocida.");
+        printf("Error: Operación desconocida.\n");
         exit(1);
     }
     else{
@@ -64,12 +64,12 @@ int main(int argc, char *argv[])
     else if (strcmp("-p",argv[5]) == 0 ) aux = 6;
     else if (strcmp("-p",argv[7]) == 0 ) aux = 8;
     else {
-        perror("Error: No se ha especificado el puerto destino.");
+        printf("Error: No se ha especificado el puerto destino.\n");
         exit(0);
     }
 
-    if (atoi(argv[aux])>29999 || atoi(argv[aux])<20000  ) {
-        perror("Error: Rango de puerto incorrecto.");
+    if ((atoi(argv[aux]) > 29999) || (atoi(argv[aux]) < 1024 )) {
+        printf("Error: Rango de puerto incorrecto.\n");
         exit(1);
     }
     else{
