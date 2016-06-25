@@ -25,6 +25,10 @@
 #define WENT_IN  1
 #define WENT_OUT 0
 
+typedef int bool;
+#define true 1
+#define false 0
+
 struct msg
 {
     char in_out;
@@ -56,6 +60,45 @@ int new_ticket(){
     localtime_r(&time_data,parking_space[i]);
 
     return i;
+}
+
+
+bool answerClient(struct in_addr addr, char info[], bool notFull){
+
+    int socks; /* descriptor a usar con el socket */
+    struct sockaddr_in out_addr; /* almacenara la direccion IP y numero de puerto del cliente */
+    int sentbytes; /* conteo de bytes a escribir */
+    char BoolDateTime[13];
+
+    out_addr.sin_family = AF_INET; /* usa host byte order */
+    out_addr.sin_port = htons(20683); /* usa network byte order */
+    out_addr.sin_addr = addr;
+    bzero(&(out_addr.sin_zero), 8); /* pone en cero el resto */
+    snprintf (BoolDateTime, 1, "%d",notFull);
+    strcat(BoolDateTime, info); 
+    printf("%s\n", BoolDateTime);
+    /* enviamos el mensaje */
+
+    /* Creamos el socket */
+    if ((socks = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
+        perror("socket");
+        exit(2);
+    }
+
+    sentbytes=sendto(socks,
+                    BoolDateTime,
+                    strlen(BoolDateTime),
+                    0,(struct sockaddr *)&out_addr,
+                    sizeof(struct sockaddr));
+
+    if ( sentbytes == -1) {
+        perror("sendto");
+        exit(2);
+    }
+    printf("enviados %d bytes hacia %s\n",sentbytes,inet_ntoa(out_addr.sin_addr));
+    /* cierro socket */
+    close(socks);
+    exit (0);
 }
 
 
@@ -211,7 +254,7 @@ int main(int argc, char *argv[])
 
             /* Wait for a message to appear*/
             while (its_empty(cb)) 
-                sleep(1);
+                sleep(1);  // Esto es mucho D:
             
             // printf("Por consumir\n");
             /* Cosume message*/
@@ -222,9 +265,10 @@ int main(int argc, char *argv[])
             {   
                 // printf("Nuevo ticket\n");
                 last_ticket = new_ticket();
-                --free_parking_lots;
+                //free_parking_lots;
                 // printf("Escribiendo accion\n");
                 write_action(entrance_log,WENT_IN,1,last_ticket);
+                //answerClient(their_addr.sin_addr,"301019941628",0); //DESCOMENTAR PARA FURULAR
                 printf("Listo\n");
             }
             else if (m->in_out=='s')

@@ -7,49 +7,70 @@
 #include <arpa/inet.h>
 #include <sys/types.h>
 //#define SERVER_PORT 20684
-//#define BUFFER_LEN 1024
+#define BUFFER_LEN 1024
 
 typedef int bool;
 #define true 1
 #define false 0
 
-bool answerClient(struct in_addr addr, char info[], bool notFull){
 
-    int socks; /* descriptor a usar con el socket */
-    struct sockaddr_in out_addr; /* almacenara la direccion IP y numero de puerto del cliente */
-    int sentbytes; /* conteo de bytes a escribir */
-    char BoolDateTime[13];
+void * wait_answer(){
+    int addr_len, numbytes;
+    int status;
+    struct sockaddr_in client_addr;
+    char buf[BUFFER_LEN];
+    struct msg *last_message;
+    struct sockaddr_in client_address;
+    int sockfd;
 
-    out_addr.sin_family = AF_INET; /* usa host byte order */
-    out_addr.sin_port = htons(20683); /* usa network byte order */
-    out_addr.sin_addr = addr;
-    bzero(&(out_addr.sin_zero), 8); /* pone en cero el resto */
-    snprintf (BoolDateTime, 1, "%d",notFull);
-    strcat(BoolDateTime, info); 
-    printf("%s\n", BoolDateTime);
-    /* enviamos el mensaje */
 
-    /* Creamos el socket */
-    if ((socks = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
-        perror("socket");
-        exit(2);
+    /* Server initialization */
+    client_address.sin_family      = AF_INET;            
+    client_address.sin_port        = htons(20683); 
+    client_address.sin_addr.s_addr = INADDR_ANY;         
+    bzero(&(client_address.sin_zero), 8); 
+
+    /* Socket */
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd == -1) { perror("socket"); exit(1); }
+
+    /* bind */
+    status = bind(sockfd
+                 ,(struct sockaddr *)&client_address
+                 ,sizeof(struct sockaddr));
+    if (status == -1)  { perror("bind"); exit(2); }
+    
+    addr_len = sizeof(struct sockaddr);
+
+    while(1) {
+        // printf("Pase \n");
+        printf("Esperando datos ....\n");
+        numbytes = recvfrom(sockfd, buf, 
+                            BUFFER_LEN, 0, 
+                            (struct sockaddr *)&client_addr,
+                            (socklen_t *)&addr_len);
+
+        if ( numbytes == -1 ) {
+            perror("recvfrom");
+            exit(3);
+        }
+
+
+        printf("paquete proveniente de : %s\n",inet_ntoa(client_addr.sin_addr));
+        printf("longitud del paquete en bytes: %d\n",numbytes);
+        buf[numbytes] = '\0';
+        printf("el paquete contiene: %s\n", buf);
+
+        /*last_message = (struct msg*) get_writer(cb);
+        last_message->in_out = buf[0];
+        last_message->car_id = atoi(&buf[1]);
+        last_message->client = client_addr.sin_addr.s_addr;
+        advance_writer(&cb);*/
+        // printf("Escribi\n");
     }
 
-    sentbytes=sendto(socks,
-                    BoolDateTime,
-                    strlen(BoolDateTime),
-                    0,(struct sockaddr *)&out_addr,
-                    sizeof(struct sockaddr));
-
-    if ( sentbytes == -1) {
-        perror("sendto");
-        exit(2);
-    }
-    printf("enviados %d bytes hacia %s\n",sentbytes,inet_ntoa(out_addr.sin_addr));
-    /* cierro socket */
-    close(socks);
-    exit (0);
 }
+
 
 int main(int argc, char *argv[])
 {
@@ -60,6 +81,7 @@ int main(int argc, char *argv[])
     int aux = 0;
     int myPort;
     char myOpSerial[4];
+    int tries = 0; /* Numero de intentos para conectarse con el servidor */
 
     if (argc != 9) {
         printf ("Uso: sem_cli -d <nombre_módulo_atención> -p <puerto_sem_svr> -c <op> -i <identificación_vehiculo> \n");
@@ -149,20 +171,33 @@ int main(int argc, char *argv[])
     their_addr.sin_addr = *((struct in_addr *)he->h_addr);
     bzero(&(their_addr.sin_zero), 8); /* pone en cero el resto */
     /* enviamos el mensaje */
-    numbytes=sendto(sockfd,
-                    myOpSerial,
-                    strlen(myOpSerial),
-                    0,(struct sockaddr *)&their_addr,
-                    sizeof(struct sockaddr));
+    while (tries < 3) {
+        numbytes=sendto(sockfd,
+                        myOpSerial,
+                        strlen(myOpSerial),
+                        0,(struct sockaddr *)&their_addr,
+                        sizeof(struct sockaddr));
 
-    if ( numbytes == -1) {
-        perror("sendto");
-        exit(2);
+        if ( numbytes == -1) {
+            tries++;                /* incrementa el contador y vuelve a intentar */
+            fprintf(stderr, "Error al conectarse con el servidor. Intento %d de 3.\n",tries+1);
+            //exit(2);
+            if (tries==3){
+                perror("Tiempo de espera agotado.");
+                exit(2);
+            }
+            else{
+                continue;
+            }
+        }
+        printf("enviados %d bytes hacia %s\n--------\n",numbytes,inet_ntoa(their_addr.sin_addr));
+        break;
+        tries=0;
     }
-    printf("enviados %d bytes hacia %s\n",numbytes,inet_ntoa(their_addr.sin_addr));
     /* cierro socket */
-    answerClient(their_addr.sin_addr,"301019941628",0);
+    //answerClient(their_addr.sin_addr,"301019941628",0);
     close(sockfd);
+    wait_answer();
     exit (0);
 }
 
