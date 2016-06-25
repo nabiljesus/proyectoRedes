@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
                 last_ticket = new_ticket();
                 --free_parking_lots;
                 // printf("Escribiendo accion\n");
-                write_action(entrance_log,WENT_IN,1,m->car_id);
+                write_action(entrance_log,WENT_IN,1,last_ticket);
                 printf("Listo\n");
             }
             else if (m->in_out=='s')
