@@ -11,6 +11,10 @@
 #include <time.h>
 #include <string.h>
 
+#include <pthread.h>
+
+#include "circular_buffer.h"
+
 // #define SERVER_PORT 4321
 #define BUFFER_LEN 1024
 
@@ -21,10 +25,20 @@
 #define WENT_IN  1
 #define WENT_OUT 0
 
+struct msg
+{
+    char in_out;
+    int  car_id;
+    long client; // sender
+};
 
 // Store hours in array
 struct tm * parking_space[PARKING_LOT_SIZE];
+struct circular_buffer cb;
+
 int message[2];
+
+int listen_port;              // Port we will be listening
 
 
 int new_ticket(){
@@ -49,15 +63,17 @@ void write_action(char *output_file,int coming_inside,int door,int i){
     char action[8];
     char time_buffer[30];
     FILE *log_file = fopen(output_file, "a");
-
+    printf("File opened\n");
     // Check there is actually a car in there
     assert(parking_space[i] != NULL);
 
     if (coming_inside) strcpy(action,"entrado");
     else        strcpy(action,"salido");
 
+    printf("Making time\n");
     strftime(time_buffer, 30, "%d/%m/%Y %H:%M:%S", parking_space[i]);
 
+    printf("Writing to file\n");
     fprintf(log_file
            ,"%s | carro con ticket #%d ha %s por la puerta %d \n"
            ,time_buffer
@@ -74,37 +90,59 @@ void write_action(char *output_file,int coming_inside,int door,int i){
     }
 }
 
-void read_message(int socket){
+void * read_messages(){
     int addr_len, numbytes;
+    int status;
     struct sockaddr_in client_addr;
     char buf[BUFFER_LEN];
-
-    addr_len = sizeof(struct sockaddr);
-    printf("Esperando datos ....\n");
-    numbytes = recvfrom(socket, buf, 
-                        BUFFER_LEN, 0, 
-                        (struct sockaddr *)&client_addr,
-                        (socklen_t *)&addr_len);
-
-    if ( numbytes == -1 ) {
-        perror("recvfrom");
-        exit(3);
-    }
+    struct msg *last_message;
+    struct sockaddr_in server_address;
+    int sockfd;
 
 
+    /* Server initialization */
+    server_address.sin_family      = AF_INET;            
+    server_address.sin_port        = htons(listen_port); 
+    server_address.sin_addr.s_addr = INADDR_ANY;         
+    bzero(&(server_address.sin_zero), 8); 
 
-    printf("paquete proveniente de : %s\n",inet_ntoa(client_addr.sin_addr));
-    printf("longitud del paquete en bytes: %d\n",numbytes);
-    buf[numbytes] = '\0';
-    printf("el paquete contiene: %s\n", buf);
+    /* Socket */
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd == -1) { perror("socket"); exit(1); }
 
-    printf("Pasando...\n");
-
-    message[0] = buf[0];
-
+    /* bind */
+    status = bind(sockfd
+                 ,(struct sockaddr *)&server_address
+                 ,sizeof(struct sockaddr));
+    if (status == -1)  { perror("bind"); exit(2); }
     
-    if (buf[0] == 's'){
-        message[1] = atoi(&buf[1]);
+    addr_len = sizeof(struct sockaddr);
+
+    while(1) {
+        // printf("Pase \n");
+        printf("Esperando datos ....\n");
+        numbytes = recvfrom(sockfd, buf, 
+                            BUFFER_LEN, 0, 
+                            (struct sockaddr *)&client_addr,
+                            (socklen_t *)&addr_len);
+
+        if ( numbytes == -1 ) {
+            perror("recvfrom");
+            exit(3);
+        }
+
+
+        printf("paquete proveniente de : %s\n",inet_ntoa(client_addr.sin_addr));
+        printf("longitud del paquete en bytes: %d\n",numbytes);
+        buf[numbytes] = '\0';
+        printf("el paquete contiene: %s\n", buf);
+
+        last_message = (struct msg*) get_writer(cb);
+        last_message->in_out = buf[0];
+        last_message->car_id = atoi(&buf[1]);
+        last_message->client = client_addr.sin_addr.s_addr;
+        advance_writer(&cb);
+        // printf("Escribi\n");
     }
 
 }
@@ -117,15 +155,14 @@ void read_message(int socket){
 int main(int argc, char *argv[])
 {
     int free_parking_lots = PARKING_LOT_SIZE;
-    int listen_port;              // Port we will be listening
     char *entrance_log,*exit_log; // Strings for log files
     
     int status;      // Auxiliary to check procedure returning values
     int i;
-    int sockfd;
     int last_ticket;
+    struct msg *m;    // To read messages
+    pthread_t tid;
     
-    struct sockaddr_in server_address;
 
     if (argc != 7) {
         printf ("Uso: sem_svr -l <puerto_sem_svr> -i <bitácora_entrada> -o <bitácora_salida> \n");
@@ -159,43 +196,38 @@ int main(int argc, char *argv[])
     /* Initialize parking lot */
     for (i = 0; i < PARKING_LOT_SIZE; ++i)
         parking_space[i] = NULL;
+    /* initialize circular buffer for messages*/
+    init_buffer(&cb,(sizeof(struct msg)));
 
 
-    /* Server initialization */
-    server_address.sin_family      = AF_INET;            
-    server_address.sin_port        = htons(listen_port); 
-    server_address.sin_addr.s_addr = INADDR_ANY;         
-    bzero(&(server_address.sin_zero), 8); 
-
-    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-
-    if (sockfd == -1) { perror("socket"); exit(1); }
-
-    status = bind(sockfd
-                 ,(struct sockaddr *)&server_address
-                 ,sizeof(struct sockaddr));
-
-    if (status == -1)  { perror("bind"); exit(2); }
+    /* Start reader socket */ 
+    pthread_create(&tid, NULL, read_messages, NULL);
+    pthread_detach(tid);
 
 
-    // Estados
     while (1){
         // Entregar tickets y aceptar tickets de salida
         while(free_parking_lots > 0 ) {
 
-            read_message(sockfd); //&last_ticket // Entregar puerta, ticket y si es entrada o salida
-            // Si alguien entra
-            printf("Por revisar\n");
-            if (message[0]=='e')
+            /* Wait for a message to appear*/
+            while (its_empty(cb)) 
+                sleep(1);
+            
+            // printf("Por consumir\n");
+            /* Cosume message*/
+            m = read_cb(&cb);
+            // printf("Consumido\n");
+
+            if (m->in_out=='e')
             {   
-                printf("Todo bien\n");
+                // printf("Nuevo ticket\n");
                 last_ticket = new_ticket();
                 --free_parking_lots;
-
+                // printf("Escribiendo accion\n");
                 write_action(entrance_log,WENT_IN,1,last_ticket);
-
+                printf("Listo\n");
             }
-            else if (message[0]=='s')
+            else if (m->in_out=='s')
             {
                 ++free_parking_lots;
                 // Se debe crear un ticket con los datos recibdos
@@ -211,9 +243,9 @@ int main(int argc, char *argv[])
         // Rebotar gente hasta encontrar algun ticket de salida
         while(free_parking_lots == 0)
         {   
-            read_message(sockfd);
+            // read_message(sockfd);
 
-            if (message[0]=='e') printf("Chao, esta lleno\n");
+            if (m->in_out=='e') printf("Chao, esta lleno\n");
             else if (message[0]=='s'){
                 ++free_parking_lots;
                 // Se debe crear un ticket con los datos recibdos
