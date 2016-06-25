@@ -195,8 +195,8 @@ int main(int argc, char *argv[])
 {
     int free_parking_lots = PARKING_LOT_SIZE;
     char *entrance_log,*exit_log; // Strings for log files
-    char msg_buffer[20];
-    char time_string[20];
+    char msg_buffer[30];
+    char time_string[30];
     
     int status;      // Auxiliary to check procedure returning values
     int i;
@@ -262,14 +262,15 @@ int main(int argc, char *argv[])
                 last_ticket = new_ticket();
                 --free_parking_lots;
 
+                printf("Formating time\n");
                 strftime(time_string
-                        ,20
+                        ,30
                         ,"%d%m%Y%H%M"
                         ,parking_space[last_ticket]);
 
                 // format BDDMMYYYYHHMMSSS with SSS as ticket serial
-                sprintf(msg_buffer,"1%s%03d\0",m->car_id,time_string);
-                printf("%s\n",msg_buffer);
+                printf("Formating message %d\n",last_ticket);
+                sprintf(msg_buffer,"1%s%03d",time_string,last_ticket);
 
                 write_action(entrance_log,WENT_IN,1,last_ticket);
                 answerClient(m->client.sin_addr,msg_buffer,0); 
@@ -304,7 +305,7 @@ int main(int argc, char *argv[])
                         ,"%d%m%Y%H%M"
                         ,parking_space[last_ticket]);
 
-                sprintf(msg_buffer,"0%sXXX\0",m->car_id,time_string);
+                sprintf(msg_buffer,"0%sXXX\0",time_string);
                 printf("%s\n",msg_buffer);
 
                 write_action(entrance_log,WENT_IN,1,last_ticket);
