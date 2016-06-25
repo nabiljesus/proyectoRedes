@@ -16,6 +16,7 @@
 #include "circular_buffer.h"
 
 // #define SERVER_PORT 4321
+#define RESPONSE_PORT 20683
 #define BUFFER_LEN 1024
 
 #define PARKING_LOT_SIZE 200
@@ -33,7 +34,7 @@ struct msg
 {
     char in_out;
     int  car_id;
-    long client; // sender
+    struct sockaddr_in client; // sender
 };
 
 // Store hours in array
@@ -71,7 +72,7 @@ bool answerClient(struct in_addr addr, char info[], bool notFull){
     char BoolDateTime[13];
 
     out_addr.sin_family = AF_INET; /* usa host byte order */
-    out_addr.sin_port = htons(20683); /* usa network byte order */
+    out_addr.sin_port = htons(RESPONSE_PORT); /* usa network byte order */
     out_addr.sin_addr = addr;
     bzero(&(out_addr.sin_zero), 8); /* pone en cero el resto */
     snprintf (BoolDateTime, 1, "%d",notFull);
@@ -98,7 +99,7 @@ bool answerClient(struct in_addr addr, char info[], bool notFull){
     printf("enviados %d bytes hacia %s\n",sentbytes,inet_ntoa(out_addr.sin_addr));
     /* cierro socket */
     close(socks);
-    exit (0);
+    
 }
 
 
@@ -136,10 +137,10 @@ void write_action(char *output_file,int coming_inside,int door,int i){
 void * read_messages(){
     int addr_len, numbytes;
     int status;
-    struct sockaddr_in client_addr;
     char buf[BUFFER_LEN];
     struct msg *last_message;
     struct sockaddr_in server_address;
+    struct sockaddr_in client_addr;
     int sockfd;
 
 
@@ -183,9 +184,9 @@ void * read_messages(){
         last_message = (struct msg*) get_writer(cb);
         last_message->in_out = buf[0];
         last_message->car_id = atoi(&buf[1]);
-        last_message->client = client_addr.sin_addr.s_addr;
+        memcpy(&last_message->client,&client_addr,sizeof(struct sockaddr_in));
+    
         advance_writer(&cb);
-        // printf("Escribi\n");
     }
 
 }
@@ -263,12 +264,12 @@ int main(int argc, char *argv[])
 
             if (m->in_out=='e')
             {   
-                // printf("Nuevo ticket\n");
                 last_ticket = new_ticket();
-                //free_parking_lots;
-                // printf("Escribiendo accion\n");
+                --free_parking_lots;
+
                 write_action(entrance_log,WENT_IN,1,last_ticket);
-                //answerClient(their_addr.sin_addr,"301019941628",0); //DESCOMENTAR PARA FURULAR
+                answerClient(m->client.sin_addr,"301019941628",0); //DESCOMENTAR PARA FURULAR
+
                 printf("Listo\n");
             }
             else if (m->in_out=='s')

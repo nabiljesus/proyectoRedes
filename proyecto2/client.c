@@ -6,7 +6,8 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
-//#define SERVER_PORT 20684
+
+#define RESPONSE_PORT 20683
 #define BUFFER_LEN 1024
 
 typedef int bool;
@@ -26,7 +27,7 @@ void * wait_answer(){
 
     /* Server initialization */
     client_address.sin_family      = AF_INET;            
-    client_address.sin_port        = htons(20683); 
+    client_address.sin_port        = htons(RESPONSE_PORT); 
     client_address.sin_addr.s_addr = INADDR_ANY;         
     bzero(&(client_address.sin_zero), 8); 
 
