@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in their_addr; /* almacenara la direccion IP y numero de puerto del servidor */
     struct hostent *he; /* para obtener nombre del host */
     int numbytes; /* conteo de bytes a escribir */
+    char hola[] = "e";
     
     if (argc != 3) {
         fprintf(stderr,"\nuso: %s cliente hostname mensaje\n", argv[0]);
@@ -37,8 +38,8 @@ int main(int argc, char *argv[])
     bzero(&(their_addr.sin_zero), 8); /* pone en cero el resto */
     /* enviamos el mensaje */
     numbytes=sendto(sockfd,
-                    argv[2],
-                    strlen(argv[2]),
+                    hola,
+                    strlen(hola),
                     0,(struct sockaddr *)&their_addr,
                     sizeof(struct sockaddr));
 

@@ -21,9 +21,10 @@
 #define WENT_IN  1
 #define WENT_OUT 0
 
+
 // Store hours in array
 struct tm * parking_space[PARKING_LOT_SIZE];
-
+int message[2];
 
 
 int new_ticket(){
@@ -58,7 +59,7 @@ void write_action(char *output_file,int coming_inside,int door,int i){
     strftime(time_buffer, 30, "%d/%m/%Y %H:%M:%S", parking_space[i]);
 
     fprintf(log_file
-           ,"%s | carro %d ha %s por la puerta %d \n"
+           ,"%s | carro con ticket #%d ha %s por la puerta %d \n"
            ,time_buffer
            ,i
            ,action
@@ -90,10 +91,22 @@ void read_message(int socket){
         exit(3);
     }
 
+
+
     printf("paquete proveniente de : %s\n",inet_ntoa(client_addr.sin_addr));
     printf("longitud del paquete en bytes: %d\n",numbytes);
     buf[numbytes] = '\0';
     printf("el paquete contiene: %s\n", buf);
+
+    printf("Pasando...\n");
+
+    message[0] = buf[0];
+
+    
+    if (buf[0] == 's'){
+        message[1] = atoi(&buf[1]);
+    }
+
 }
 
 /*void send_ticket(int socket){
@@ -112,10 +125,7 @@ int main(int argc, char *argv[])
     int sockfd;
     int last_ticket;
     
-    
     struct sockaddr_in server_address;
-
-    assert(argc == 7);
 
     if (argc != 7) {
         printf ("Uso: sem_svr -l <puerto_sem_svr> -i <bitácora_entrada> -o <bitácora_salida> \n");
@@ -168,9 +178,6 @@ int main(int argc, char *argv[])
     if (status == -1)  { perror("bind"); exit(2); }
 
 
-    
-
-
     // Estados
     while (1){
         // Entregar tickets y aceptar tickets de salida
@@ -178,34 +185,45 @@ int main(int argc, char *argv[])
 
             read_message(sockfd); //&last_ticket // Entregar puerta, ticket y si es entrada o salida
             // Si alguien entra
-            if (1)
+            printf("Por revisar\n");
+            if (message[0]=='e')
             {   
+                printf("Todo bien\n");
                 last_ticket = new_ticket();
+                --free_parking_lots;
+
                 write_action(entrance_log,WENT_IN,1,last_ticket);
 
-                --free_parking_lots;
             }
-            else
+            else if (message[0]=='s')
             {
                 ++free_parking_lots;
                 // Se debe crear un ticket con los datos recibdos
-                write_action(exit_log,WENT_OUT,1,last_ticket);
+                write_action(exit_log,WENT_OUT,1,message[1]);
+
                 
             }
+            else printf("wtf?\n");
 
             
         }
         
         // Rebotar gente hasta encontrar algun ticket de salida
         while(free_parking_lots == 0)
-        {
-            read_message(sockfd);//&last_ticket
+        {   
+            read_message(sockfd);
 
-            ++free_parking_lots;
-            // Se debe crear un ticket con los datos recibdos
-            write_action(exit_log,WENT_OUT,1,last_ticket);
+            if (message[0]=='e') printf("Chao, esta lleno\n");
+            else if (message[0]=='s'){
+                ++free_parking_lots;
+                // Se debe crear un ticket con los datos recibdos
+                write_action(exit_log,WENT_OUT,1,message[1]);
+                
+            }
+            else printf("wtf?\n");
+
         }
-        sleep(3);
+        
     }
 
 }
