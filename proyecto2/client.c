@@ -59,7 +59,7 @@ void * wait_answer(){
         printf("paquete proveniente de : %s\n",inet_ntoa(client_addr.sin_addr));
         printf("longitud del paquete en bytes: %d\n",numbytes);
         buf[numbytes] = '\0';
-        printf("el paquete contiene: %s\n", buf);
+        printf("el paquete contiene: %s\n", buf);      //Aqui se debería imprimir.
 
         /*last_message = (struct msg*) get_writer(cb);
         last_message->in_out = buf[0];
@@ -171,14 +171,10 @@ int main(int argc, char *argv[])
     their_addr.sin_addr = *((struct in_addr *)he->h_addr);
     bzero(&(their_addr.sin_zero), 8); /* pone en cero el resto */
     /* enviamos el mensaje */
-    while (tries < 3) {
-        numbytes=sendto(sockfd,
-                        myOpSerial,
-                        strlen(myOpSerial),
-                        0,(struct sockaddr *)&their_addr,
-                        sizeof(struct sockaddr));
 
-        if ( numbytes == -1) {
+    while (tries < 3) {
+        printf("Hey buddy-\n");
+        if (connect(sockfd,(struct sockaddr *) &their_addr,sizeof(their_addr)) < 0) {
             tries++;                /* incrementa el contador y vuelve a intentar */
             fprintf(stderr, "Error al conectarse con el servidor. Intento %d de 3.\n",tries+1);
             //exit(2);
@@ -190,7 +186,19 @@ int main(int argc, char *argv[])
                 continue;
             }
         }
+        printf("Hey buddy x2\n");
+
         printf("enviados %d bytes hacia %s\n--------\n",numbytes,inet_ntoa(their_addr.sin_addr));
+        numbytes=sendto(sockfd,
+                        myOpSerial,
+                        strlen(myOpSerial),
+                        0,(struct sockaddr *)&their_addr,
+                        sizeof(struct sockaddr));
+
+        if ( numbytes == -1) {
+            perror("Error al enviar datos al servidor.");
+            exit(2);
+        }
         break;
         tries=0;
     }
