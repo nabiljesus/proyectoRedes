@@ -6,6 +6,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
+#include <assert.h>
 
 #include <time.h>
 #include <string.h>
@@ -20,54 +21,68 @@
 #define WENT_IN  1
 #define WENT_OUT 0
 
+// Store hours in array
 struct tm * parking_space[PARKING_LOT_SIZE];
 
-/* Ticket structure*/
-struct ticket
-{
-    int       identifier;  /* Unique ticket/car identifier */
-    struct tm *enter_time; /* Time when car checked-in     */
-};
 
-void update_ticket(struct ticket *t,int newval){
+
+int new_ticket(){
+    int i = 0;
     time_t time_data;
-    time(&time_data);
+    time(&time_data); /* Get time*/
+    
+    /* Look for first free spot*/
+    while( i < PARKING_LOT_SIZE && parking_space[i] != NULL) ++i;
 
-    t->identifier = newval;
-    t->enter_time = localtime(&time_data);
+    /* Store time for that spot */
+    parking_space[i] = (struct tm *) malloc(sizeof(struct tm));
+    assert(parking_space[i] != NULL);
+
+    localtime_r(&time_data,parking_space[i]);
+
+    return i;
 }
 
 
-void write_action(char *output_file,int inside,int door,struct ticket t){
+void write_action(char *output_file,int coming_inside,int door,int i){
     char action[8];
     char time_buffer[30];
     FILE *log_file = fopen(output_file, "a");
 
-    if (inside) strcpy(action,"entrado");
+    // Check there is actually a car in there
+    assert(parking_space[i] != NULL);
+
+    if (coming_inside) strcpy(action,"entrado");
     else        strcpy(action,"salido");
 
-    strftime(time_buffer, 30, "%d/%m/%Y %H:%M:%S", t.enter_time);
+    strftime(time_buffer, 30, "%d/%m/%Y %H:%M:%S", parking_space[i]);
 
     fprintf(log_file
            ,"%s | carro %d ha %s por la puerta %d \n"
            ,time_buffer
-           ,t.identifier
+           ,i
            ,action
            ,door);
 
-    fclose(log_file); 
+    fclose(log_file);
+
+    /* Release time pointer and mark as free spot */
+    if (! coming_inside){
+        free(parking_space[i]);
+        parking_space[i] = NULL;
+    }
 }
 
 void read_message(int socket){
     int addr_len, numbytes;
-    struct sockaddr_in their_addr;
+    struct sockaddr_in client_addr;
     char buf[BUFFER_LEN];
 
     addr_len = sizeof(struct sockaddr);
     printf("Esperando datos ....\n");
     numbytes = recvfrom(socket, buf, 
                         BUFFER_LEN, 0, 
-                        (struct sockaddr *)&their_addr,
+                        (struct sockaddr *)&client_addr,
                         (socklen_t *)&addr_len);
 
     if ( numbytes == -1 ) {
@@ -75,28 +90,32 @@ void read_message(int socket){
         exit(3);
     }
 
-    printf("paquete proveniente de : %s\n",inet_ntoa(their_addr.sin_addr));
+    printf("paquete proveniente de : %s\n",inet_ntoa(client_addr.sin_addr));
     printf("longitud del paquete en bytes: %d\n",numbytes);
     buf[numbytes] = '\0';
     printf("el paquete contiene: %s\n", buf);
 }
 
+/*void send_ticket(int socket){
+
+}*/
+
 
 int main(int argc, char *argv[])
 {
-    int ticket_number     = 0;
     int free_parking_lots = PARKING_LOT_SIZE;
-    int listen_port; // Port we will be listening
-    char *entrance_log,*exit_log;
+    int listen_port;              // Port we will be listening
+    char *entrance_log,*exit_log; // Strings for log files
     
     int status;      // Auxiliary to check procedure returning values
-
+    int i;
     int sockfd;
+    int last_ticket;
     
     
     struct sockaddr_in server_address;
-    struct ticket last_ticket;
 
+    assert(argc == 7);
 
     if (argc != 7) {
         printf ("Uso: sem_svr -l <puerto_sem_svr> -i <bitácora_entrada> -o <bitácora_salida> \n");
@@ -128,7 +147,7 @@ int main(int argc, char *argv[])
         exit(0);
     }
     /* Initialize parking lot */
-    for (int i = 0; i < PARKING_LOT_SIZE; ++i)
+    for (i = 0; i < PARKING_LOT_SIZE; ++i)
         parking_space[i] = NULL;
 
 
@@ -157,14 +176,13 @@ int main(int argc, char *argv[])
         // Entregar tickets y aceptar tickets de salida
         while(free_parking_lots > 0 ) {
 
-            read_message(sockfd);
+            read_message(sockfd); //&last_ticket // Entregar puerta, ticket y si es entrada o salida
             // Si alguien entra
             if (1)
             {   
-                update_ticket(&last_ticket,ticket_number);
+                last_ticket = new_ticket();
                 write_action(entrance_log,WENT_IN,1,last_ticket);
 
-                ++ticket_number;
                 --free_parking_lots;
             }
             else
@@ -181,7 +199,7 @@ int main(int argc, char *argv[])
         // Rebotar gente hasta encontrar algun ticket de salida
         while(free_parking_lots == 0)
         {
-            read_message(sockfd);
+            read_message(sockfd);//&last_ticket
 
             ++free_parking_lots;
             // Se debe crear un ticket con los datos recibdos
