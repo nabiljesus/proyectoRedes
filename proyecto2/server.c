@@ -7,6 +7,7 @@
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <assert.h>
+#include <math.h>
 
 #include <time.h>
 #include <string.h>
@@ -41,10 +42,9 @@ struct msg
 struct tm * parking_space[PARKING_LOT_SIZE];
 struct circular_buffer cb;
 
-int message[2];
 
 int listen_port;              // Port we will be listening
-
+int last_payment;
 
 int new_ticket(){
     int i = 0;
@@ -61,6 +61,24 @@ int new_ticket(){
     localtime_r(&time_data,parking_space[i]);
 
     return i;
+}
+
+int ticket_price(int lot){
+    double seconds;
+    double hours;
+
+    time_t start_time,final_time;
+    time(&final_time);
+    start_time = mktime(parking_space[lot]);
+
+    seconds = difftime(final_time,start_time);
+
+    hours = (int) ceil((seconds / 60) / 60);
+
+    // Update spot to last time
+    localtime_r(&final_time,parking_space[lot]);
+
+    return 80 + (hours > 1 ? (hours-1)*30  : 0 );
 }
 
 
@@ -103,7 +121,7 @@ bool answerClient(struct in_addr addr, char info[], bool notFull){
 }
 
 
-void write_action(char *output_file,int coming_inside,int door,int i){
+void write_action(char *output_file,int coming_inside,int i){
     char action[8];
     char time_buffer[30];
     FILE *log_file = fopen(output_file, "a");
@@ -118,11 +136,14 @@ void write_action(char *output_file,int coming_inside,int door,int i){
     strftime(time_buffer, 30, "%d/%m/%Y %H:%M:%S", parking_space[i]);
 
     fprintf(log_file
-           ,"%s | carro con ticket #%d ha %s por la puerta %d \n"
+           ,"%s | carro con ticket #%03d ha %s"
            ,time_buffer
            ,i
-           ,action
-           ,door);
+           ,action);
+
+    if (! coming_inside) fprintf(log_file,". Pago:%d",last_payment);
+
+    fprintf(log_file,"\n");
 
     fclose(log_file);
 
@@ -272,15 +293,20 @@ int main(int argc, char *argv[])
                 printf("Formating message %d\n",last_ticket);
                 sprintf(msg_buffer,"1%s%03d",time_string,last_ticket);
 
-                write_action(entrance_log,WENT_IN,1,last_ticket);
+                write_action(entrance_log,WENT_IN,last_ticket);
                 answerClient(m->client.sin_addr,msg_buffer,0); 
 
             }
             else if (m->in_out=='s')
             {
                 ++free_parking_lots;
-                // Se debe crear un ticket con los datos recibdos
-                write_action(exit_log,WENT_OUT,1,message[1]);
+
+                last_payment = ticket_price(m->car_id);
+
+                sprintf(msg_buffer,"%d",last_payment);
+                answerClient(m->client.sin_addr,msg_buffer,0);
+
+                write_action(exit_log,WENT_OUT,m->car_id);
 
                 
             }
@@ -305,16 +331,21 @@ int main(int argc, char *argv[])
                         ,"%d%m%Y%H%M"
                         ,parking_space[last_ticket]);
 
-                sprintf(msg_buffer,"0%sXXX\0",time_string);
+                sprintf(msg_buffer,"0%sXXX",time_string);
                 printf("%s\n",msg_buffer);
 
-                write_action(entrance_log,WENT_IN,1,last_ticket);
                 answerClient(m->client.sin_addr,msg_buffer,0);  
+                write_action(entrance_log,WENT_IN,last_ticket);
             }
-            else if (message[0]=='s'){
+            else if (m->in_out=='s'){
                 ++free_parking_lots;
-                // Se debe crear un ticket con los datos recibdos
-                write_action(exit_log,WENT_OUT,1,message[1]);
+
+                last_payment = ticket_price(m->car_id);
+
+                sprintf(msg_buffer,"%d",last_payment);
+                answerClient(m->client.sin_addr,msg_buffer,0); 
+
+                write_action(exit_log,WENT_OUT,m->car_id);
                 
             }
             else printf("wtf?\n");
