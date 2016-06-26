@@ -6,67 +6,159 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
-
-#define RESPONSE_PORT 20683
+//#define SERVER_PORT 20684
 #define BUFFER_LEN 1024
+#define MACHINEID  3
 
 typedef int bool;
 #define true 1
 #define false 0
 
+void printTicket(char * info){
+    char * ticket[15];
+    int i;
+    
+    char ticket12[60];
+    char aux[60];
+    char aux2[60];
+    system("cls");
+    system("clear");
 
-void * wait_answer(){
+    for (i=0;i<20;i++)
+        printf("\n");
+    ticket[0]="   ############################################################";
+    ticket[1]="   #      ____   ____     __  __            _       _         #";
+    ticket[2]="   #     / ___| / ___|   |  \\/  | ___  _ __(_) __ _| |__      #";
+    ticket[3]="   #    | |    | |       | |\\/| |/ _ \\| '__| |/ _` | '_ \\     #";
+    ticket[4]="   #    | |___ | |___ _  | |  | | (_) | |  | | (_| | | | |    #";
+    ticket[5]="   #     \\____(_)____(_) |_|  |_|\\___/|_|  |_|\\__,_|_| |_|    #";
+    ticket[6]="   #                                                          #";
+    ticket[7]="   #              Ticket de estacionamiento                   #";
+    ticket[8]="   # La reposición de este ticket tiene un costo de BsF.1.500 #";
+    ticket[9]="   #                                                          #";
+    ticket[10]="   #              Fecha: DD/MM/YY    Hora: HH/mm              #";
+    ticket[11]="   #                       Serial:  SSS                       #";
+    sprintf(ticket12,"   #                       Puerta:  %d                         #",MACHINEID);
+    ticket[12]=ticket12;
+    ticket[13]="   #                                                          #";
+    ticket[14]="   ############################################################";
+    //strcpy(answer,"");
+
+    if (info[0]=='0'){    
+        ticket[7]="   #                                                          #";
+        ticket[8]="   #                                                          #";
+        ticket[10]="   #                NO HAY PUESTOS DISPONIBLES                #";
+        ticket[11]="   #                                                          #";
+
+        for (i=0; i<15; i++){
+            printf("%s\n",ticket[i]);
+        }
+    }
+    else if (info[0]=='1'){
+        char DD[3];
+        char MM[3];
+        char YYYY[5];
+        char HH[3];
+        char mm[3];
+        char sss[4];
+        //BDDMMYYYYHHMMSSS
+        DD[2]=0;
+        MM[2]=0;
+        YYYY[4]=0;
+        HH[2]=0;
+        mm[2]=0;
+        sss[3]=0;
+        strncpy(DD, info+1, 2);
+        strncpy(MM, info+3, 2);
+        strncpy(YYYY, info+5, 4);
+        strncpy(HH, info+9, 2);
+        strncpy(mm, info+11, 2);
+        strncpy(sss, info+13, 3);
+        sprintf(aux, "   #              Fecha: %s/%s/%s  Hora: %s/%s              #", DD,MM,YYYY,HH,mm);
+        ticket[10]=aux;
+        sprintf(aux2,"   #                       Serial:  %s                       #", sss);
+        ticket[11]=aux2;
+        for (i=0; i<15; i++){
+            printf("%s\n",ticket[i]);
+        }
+        ;
+    }
+    else{
+        ticket[7]="   #                                                          #";
+        ticket[8]="   #                                                          #";
+        sprintf(aux,"   #                TOTAL A PAGAR: %s,00 BsF      #",info);
+        ticket[10]=aux;
+        ticket[11]="   #                                                          #";
+
+        for (i=0; i<15; i++){
+            printf("%s\n",ticket[i]);
+        }
+    }
+
+    for (i=0;i<20;i++)
+        printf("\n");
+
+
+}
+
+
+bool  wait_answer(char * buf){
+    printf("entro a la patria !!! \n");
     int addr_len, numbytes;
     int status;
     struct sockaddr_in client_addr;
-    char buf[BUFFER_LEN];
+    //char buf[BUFFER_LEN];
     struct msg *last_message;
     struct sockaddr_in client_address;
-    int sockfd;
+    int sockfd2;
+    struct timeval tv;
+
+    tv.tv_sec = 30;  /* 30 Secs Timeout */
+    tv.tv_usec = 0;  // Not init'ing this can cause strange errors
 
 
     /* Server initialization */
     client_address.sin_family      = AF_INET;            
-    client_address.sin_port        = htons(RESPONSE_PORT); 
+    client_address.sin_port        = htons(20683); 
     client_address.sin_addr.s_addr = INADDR_ANY;         
     bzero(&(client_address.sin_zero), 8); 
 
     /* Socket */
-    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sockfd == -1) { perror("socket"); exit(1); }
-
+    sockfd2 = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd2 == -1) { perror("socket"); exit(1); }
+    setsockopt(sockfd2, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,sizeof(struct timeval));
     /* bind */
-    status = bind(sockfd
+    status = bind(sockfd2
                  ,(struct sockaddr *)&client_address
                  ,sizeof(struct sockaddr));
     if (status == -1)  { perror("bind"); exit(2); }
     
     addr_len = sizeof(struct sockaddr);
 
-        // printf("Pase \n");
-        printf("Esperando datos ....\n");
-        numbytes = recvfrom(sockfd, buf, 
-                            BUFFER_LEN, 0, 
-                            (struct sockaddr *)&client_addr,
-                            (socklen_t *)&addr_len);
+    // printf("Pase \n");
+    printf("Esperando datos ....\n");
+    numbytes = recvfrom(sockfd2, buf, 
+                        BUFFER_LEN, 0, 
+                        (struct sockaddr *)&client_addr,
+                        (socklen_t *)&addr_len);
 
-        if ( numbytes == -1 ) {
-            perror("recvfrom");
-            exit(3);
-        }
-
-
+    if ( numbytes <= 0 ) {
+        perror("Error: Sin respuesta del servidor.");
+    }
+    else {
         printf("paquete proveniente de : %s\n",inet_ntoa(client_addr.sin_addr));
         printf("longitud del paquete en bytes: %d\n",numbytes);
         buf[numbytes] = '\0';
         printf("el paquete contiene: %s\n", buf);      //Aqui se debería imprimir.
-
-        /*last_message = (struct msg*) get_writer(cb);
-        last_message->in_out = buf[0];
-        last_message->car_id = atoi(&buf[1]);
-        last_message->client = client_addr.sin_addr.s_addr;
-        advance_writer(&cb);*/
-        // printf("Escribi\n");
+    }
+    /*last_message = (struct msg*) get_writer(cb);
+    last_message->in_out = buf[0];
+    last_message->car_id = atoi(&buf[1]);
+    last_message->client = client_addr.sin_addr.s_addr;
+    advance_writer(&cb);*/
+    // printf("Escribi\n");
+    close(sockfd2);
+    return (numbytes > 0);
 
 }
 
@@ -81,6 +173,7 @@ int main(int argc, char *argv[])
     int myPort;
     char myOpSerial[4];
     int tries = 0; /* Numero de intentos para conectarse con el servidor */
+    char * answer[16];
 
     if (argc != 9) {
         printf ("Uso: sem_cli -d <nombre_módulo_atención> -p <puerto_sem_svr> -c <op> -i <identificación_vehiculo> \n");
@@ -149,8 +242,8 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    if (atoi(argv[aux])>200 || atoi(argv[aux])<1  ) {
-        perror("Error: Rango de serial (1-200) incorrecto.");
+    if (atoi(argv[aux])>199 || atoi(argv[aux])<0  ) {
+        perror("Error: Rango de serial (0-199) incorrecto.");
         exit(1);
     }
     else{
@@ -170,41 +263,47 @@ int main(int argc, char *argv[])
     their_addr.sin_addr = *((struct in_addr *)he->h_addr);
     bzero(&(their_addr.sin_zero), 8); /* pone en cero el resto */
     /* enviamos el mensaje */
-
     while (tries < 3) {
-        printf("Hey buddy-\n");
-        if (connect(sockfd,(struct sockaddr *) &their_addr,sizeof(their_addr)) < 0) {
-            tries++;                /* incrementa el contador y vuelve a intentar */
-            fprintf(stderr, "Error al conectarse con el servidor. Intento %d de 3.\n",tries+1);
-            //exit(2);
-            if (tries==3){ 
-                perror("Tiempo de espera agotado.");
-                exit(2);
-            }
-            else{
-                continue;
-            }
-        }
-        printf("Hey buddy x2\n");
-
-        printf("enviados %d bytes hacia %s\n--------\n",numbytes,inet_ntoa(their_addr.sin_addr));
         numbytes=sendto(sockfd,
                         myOpSerial,
                         strlen(myOpSerial),
                         0,(struct sockaddr *)&their_addr,
                         sizeof(struct sockaddr));
 
-        if ( numbytes == -1) {
-            perror("Error al enviar datos al servidor.");
-            exit(2);
+        printf("enviados %d bytes hacia %s\n--------\n",numbytes,inet_ntoa(their_addr.sin_addr));
+        if ( numbytes < 0) {
+            perror("Error de conexion.");
         }
-        break;
-        tries=0;
+
+        if(!(wait_answer(answer))){
+            tries++;                /* incrementa el contador y vuelve a intentar */
+            fprintf(stderr, "Error al conectarse con el servidor. Intento %d de 3.\n",tries);
+            //exit(2);
+            if (tries==3){
+                perror("Tiempo de espera agotado.");
+                exit(2);
+            }
+            else{
+                continue;
+            }
+            tries=0;
+
+        }
+        else{
+            if (myOpSerial[0]=='e'){
+                printTicket(answer);
+
+            }
+            else{
+
+            }
+            close(sockfd);
+            exit (0);
+        }
     }
     /* cierro socket */
     //answerClient(their_addr.sin_addr,"301019941628",0);
     close(sockfd);
-    wait_answer();
     exit (0);
 }
 
