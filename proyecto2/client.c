@@ -8,52 +8,102 @@
 #include <sys/types.h>
 //#define SERVER_PORT 20684
 #define BUFFER_LEN 1024
+#define MACHINEID  3
 
 typedef int bool;
 #define true 1
 #define false 0
 
 void printTicket(char * info){
-    char * ticket[14];
+    char * ticket[15];
     int i;
+    
+    char ticket12[60];
+    char aux[60];
+    char aux2[60];
+    system("cls");
+    system("clear");
 
-    for (i=0;i<61;i++)
+    for (i=0;i<20;i++)
         printf("\n");
+    ticket[0]="   ############################################################";
+    ticket[1]="   #      ____   ____     __  __            _       _         #";
+    ticket[2]="   #     / ___| / ___|   |  \\/  | ___  _ __(_) __ _| |__      #";
+    ticket[3]="   #    | |    | |       | |\\/| |/ _ \\| '__| |/ _` | '_ \\     #";
+    ticket[4]="   #    | |___ | |___ _  | |  | | (_) | |  | | (_| | | | |    #";
+    ticket[5]="   #     \\____(_)____(_) |_|  |_|\\___/|_|  |_|\\__,_|_| |_|    #";
+    ticket[6]="   #                                                          #";
+    ticket[7]="   #              Ticket de estacionamiento                   #";
+    ticket[8]="   # La reposición de este ticket tiene un costo de BsF.1.500 #";
+    ticket[9]="   #                                                          #";
+    ticket[10]="   #              Fecha: DD/MM/YY    Hora: HH/mm              #";
+    ticket[11]="   #                       Serial:  SSS                       #";
+    sprintf(ticket12,"   #                       Puerta:  %d                         #",MACHINEID);
+    ticket[12]=ticket12;
+    ticket[13]="   #                                                          #";
+    ticket[14]="   ############################################################";
+    //strcpy(answer,"");
 
-    ticket[0]="############################################################";
-    ticket[1]="#      ____   ____     __  __            _       _         #";
-    ticket[2]="#     / ___| / ___|   |  \\/  | ___  _ __(_) __ _| |__      #";
-    ticket[3]="#    | |    | |       | |\\/| |/ _ \\| '__| |/ _` | '_ \\     #";
-    ticket[4]="#    | |___ | |___ _  | |  | | (_) | |  | | (_| | | | |    #";
-    ticket[5]="#     \\____(_)____(_) |_|  |_|\\___/|_|  |_|\\__,_|_| |_|    #";
-    ticket[6]="#                                                          #";
-    ticket[7]="#              Ticket de estacionamiento                   #";
-    ticket[8]="# La reposición de este ticket tiene un costo de BsF.1.500 #";
-    ticket[9]="#                                                          #";
-    ticket[10]="#              Fecha: DD/MM/YY    Hora: HH/MM              #";
-    ticket[11]="#                       Serial:  SSS                       #";
-    ticket[12]="#                                                          #";
-    ticket[13]="############################################################";
+    if (info[0]=='0'){    
+        ticket[7]="   #                                                          #";
+        ticket[8]="   #                                                          #";
+        ticket[10]="   #                NO HAY PUESTOS DISPONIBLES                #";
+        ticket[11]="   #                                                          #";
 
-    if (strcmp("",info)==0){    
-        ticket[7]="#                                                          #";
-        ticket[8]="#                                                          #";
-        ticket[10]="#                NO HAY PUESTOS DISPONIBLES                #";
-        ticket[11]="#                                                          #";
-
-        for (i=0; i<14; i++){
+        for (i=0; i<15; i++){
             printf("%s\n",ticket[i]);
         }
     }
-    else{
-        //caso positivo
+    else if (info[0]=='1'){
+        char DD[3];
+        char MM[3];
+        char YYYY[5];
+        char HH[3];
+        char mm[3];
+        char sss[4];
+        //BDDMMYYYYHHMMSSS
+        DD[2]=0;
+        MM[2]=0;
+        YYYY[4]=0;
+        HH[2]=0;
+        mm[2]=0;
+        sss[3]=0;
+        strncpy(DD, info+1, 2);
+        strncpy(MM, info+3, 2);
+        strncpy(YYYY, info+5, 4);
+        strncpy(HH, info+9, 2);
+        strncpy(mm, info+11, 2);
+        strncpy(sss, info+13, 3);
+        sprintf(aux, "   #              Fecha: %s/%s/%s  Hora: %s/%s              #", DD,MM,YYYY,HH,mm);
+        ticket[10]=aux;
+        sprintf(aux2,"   #                       Serial:  %s                       #", sss);
+        ticket[11]=aux2;
+        for (i=0; i<15; i++){
+            printf("%s\n",ticket[i]);
+        }
         ;
     }
+    else{
+        fprintf("%s\n", info);
+    }
+
+    for (i=0;i<20;i++)
+        ticket[7]="   #                                                          #";
+        ticket[8]="   #                                                          #";
+        sprintf(aux,"   #                TOTAL A PAGAR: %s,00 BsF      #",info);
+        ticket[10]=aux;
+        ticket[11]="   #                                                          #";
+
+        for (i=0; i<15; i++){
+            printf("%s\n",ticket[i]);
+        }
+        printf("\n");
 
 }
 
 
 bool  wait_answer(char * buf){
+    printf("entro a la patria !!! \n");
     int addr_len, numbytes;
     int status;
     struct sockaddr_in client_addr;
@@ -192,8 +242,8 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    if (atoi(argv[aux])>200 || atoi(argv[aux])<1  ) {
-        perror("Error: Rango de serial (1-200) incorrecto.");
+    if (atoi(argv[aux])>199 || atoi(argv[aux])<0  ) {
+        perror("Error: Rango de serial (0-199) incorrecto.");
         exit(1);
     }
     else{
@@ -237,10 +287,18 @@ int main(int argc, char *argv[])
                 continue;
             }
             tries=0;
-            break;
+
         }
         else{
-            printTicket(answer);
+            if (myOpSerial[0]=='e'){
+                printTicket(answer);
+
+            }
+            else{
+
+            }
+            close(sockfd);
+            exit (0);
         }
     }
     /* cierro socket */
