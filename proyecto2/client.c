@@ -84,10 +84,6 @@ void printTicket(char * info){
         ;
     }
     else{
-        fprintf("%s\n", info);
-    }
-
-    for (i=0;i<20;i++)
         ticket[7]="   #                                                          #";
         ticket[8]="   #                                                          #";
         sprintf(aux,"   #                TOTAL A PAGAR: %s,00 BsF      #",info);
@@ -97,7 +93,11 @@ void printTicket(char * info){
         for (i=0; i<15; i++){
             printf("%s\n",ticket[i]);
         }
+    }
+
+    for (i=0;i<20;i++)
         printf("\n");
+
 
 }
 
