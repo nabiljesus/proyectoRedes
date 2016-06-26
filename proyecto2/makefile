@@ -7,7 +7,7 @@ server: server.c circular_buffer.o
 	gcc server.c -pthread -lm circular_buffer.o -o server
 
 client: client.c 
-	gcc client.c -o client
+	gcc -w client.c -o client
 
 clean:
 	rm -rf *.o server client

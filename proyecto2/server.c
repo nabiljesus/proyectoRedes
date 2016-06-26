@@ -16,45 +16,47 @@
 
 #include "circular_buffer.h"
 
-// #define SERVER_PORT 4321
-#define RESPONSE_PORT 20683
-#define BUFFER_LEN 1024
 
-#define PARKING_LOT_SIZE 200
-#define HOUR_PRICE 80
+#define RESPONSE_PORT 20683 // Puerto para socket de respuesta
+#define BUFFER_LEN    1024  // Longitud del buffer de escritura para el socket
+
+// Constantes de estacionamiento
+#define PARKING_LOT_SIZE   200
+#define HOUR_PRICE          80
 #define HOUR_FRACTION_PRICE 30
 
+// Indicar si la accion es de entrada o salida
 #define WENT_IN  1
 #define WENT_OUT 0
 
 typedef int bool;
-#define true 1
+#define true  1
 #define false 0
 
+// Estructura
 struct msg
 {
-    char in_out;
-    int  car_id;
-    struct sockaddr_in client; // sender
+    char in_out;  // Identificador de accion (e/s)
+    int  car_id;  // Identificador del ticket
+    struct sockaddr_in client; // Dir del que env'ia
 };
 
-// Store hours in array
-struct tm * parking_space[PARKING_LOT_SIZE];
-struct circular_buffer cb;
+struct tm * parking_space[PARKING_LOT_SIZE];   // Arreglo de horas de llegada
+struct circular_buffer cb;                     // Buffer ciruclar para mensajes
 
 
-int listen_port;              // Port we will be listening
-int last_payment;
+int listen_port;     // Puerto a escuchar
+int last_payment;    // U'ltimo pago realizado
 
 int new_ticket(){
     int i = 0;
     time_t time_data;
-    time(&time_data); /* Get time*/
+    time(&time_data); /* Obtener hora */
     
-    /* Look for first free spot*/
+    /* B'usqueda lineal del primer puesto libre */
     while( i < PARKING_LOT_SIZE && parking_space[i] != NULL) ++i;
 
-    /* Store time for that spot */
+    /* Almacenar tiempo actual para el ticket */
     parking_space[i] = (struct tm *) malloc(sizeof(struct tm));
     assert(parking_space[i] != NULL);
 
@@ -73,17 +75,18 @@ int ticket_price(int lot){
 
     seconds = difftime(final_time,start_time);
 
+    /* Redondeo hacia arriba de horas en estacionamiento */
     hours = (int) ceil((seconds / 60) / 60);
 
-    // Update spot to last time
+    // Actualizar hora de ticket para posterior impresi'on en log
     localtime_r(&final_time,parking_space[lot]);
 
-    return 80 + (hours > 1 ? (hours-1)*30  : 0 );
+    return HOUR_PRICE + (hours > 1 ? (hours-1)* HOUR_FRACTION_PRICE  : 0 );
 }
 
 
+/* Respues a los clientes luego de pedir o entregar un ticket */
 bool answerClient(struct in_addr addr, char info[], bool notFull){
-
     int socks; /* descriptor a usar con el socket */
     struct sockaddr_in out_addr; /* almacenara la direccion IP y numero de puerto del cliente */
     int sentbytes; /* conteo de bytes a escribir */
@@ -95,7 +98,6 @@ bool answerClient(struct in_addr addr, char info[], bool notFull){
     bzero(&(out_addr.sin_zero), 8); /* pone en cero el resto */
     snprintf (BoolDateTime, 1, "%d",notFull);
     strcat(BoolDateTime, info); 
-    printf("%s\n", BoolDateTime);
     /* enviamos el mensaje */
 
     /* Creamos el socket */
@@ -114,27 +116,27 @@ bool answerClient(struct in_addr addr, char info[], bool notFull){
         perror("sendto");
         exit(2);
     }
-    printf("enviados %d bytes hacia %s\n",sentbytes,inet_ntoa(out_addr.sin_addr));
+
     /* cierro socket */
     close(socks);
     
 }
 
-
+/* Escribir bitacora para el ticket i, el cual entra o sale*/
 void write_action(char *output_file,int coming_inside,int i){
     char action[8];
     char time_buffer[30];
     FILE *log_file = fopen(output_file, "a");
-    printf("File opened\n");
-    // Check there is actually a car in there
+    
+    /* Verificamos que de verdad hay un carro*/
     assert(parking_space[i] != NULL);
 
     if (coming_inside) strcpy(action,"entrado");
     else        strcpy(action,"salido");
 
     
+    /* Creacion de string para el log*/
     strftime(time_buffer, 30, "%d/%m/%Y %H:%M:%S", parking_space[i]);
-
     fprintf(log_file
            ,"%s | carro con ticket #%03d ha %s"
            ,time_buffer
@@ -144,16 +146,17 @@ void write_action(char *output_file,int coming_inside,int i){
     if (! coming_inside) fprintf(log_file,". Pago:%d",last_payment);
 
     fprintf(log_file,"\n");
-
+    /* Actualizacion de archivo */
     fclose(log_file);
 
-    /* Release time pointer and mark as free spot */
+    /* Liberando espacio del carro de ser necesario */
     if (! coming_inside){
         free(parking_space[i]);
         parking_space[i] = NULL;
     }
 }
 
+/* Procedimiento del thread. Ciclo para escuchar en puerto y agregar datos a buffer */
 void * read_messages(){
     int addr_len, numbytes;
     int status;
@@ -164,7 +167,7 @@ void * read_messages(){
     int sockfd;
 
 
-    /* Server initialization */
+    /* Inicializacion de servidor */
     server_address.sin_family      = AF_INET;            
     server_address.sin_port        = htons(listen_port); 
     server_address.sin_addr.s_addr = INADDR_ANY;         
@@ -182,9 +185,8 @@ void * read_messages(){
     
     addr_len = sizeof(struct sockaddr);
 
+    /* Ciclo indefinido de lectura de socket y escritura en buffer */
     while(1) {
-        // printf("Pase \n");
-        printf("Esperando datos ....\n");
         numbytes = recvfrom(sockfd, buf, 
                             BUFFER_LEN, 0, 
                             (struct sockaddr *)&client_addr,
@@ -196,14 +198,14 @@ void * read_messages(){
         }
 
 
-        printf("paquete proveniente de : %s\n",inet_ntoa(client_addr.sin_addr));
-        printf("longitud del paquete en bytes: %d\n",numbytes);
         buf[numbytes] = '\0';
-        printf("el paquete contiene: %s\n", buf);
 
+        /* Obtener posicion de escritura para el buffer circular */
         last_message = (struct msg*) get_writer(cb);
+        /* Modificar en memoria */
         last_message->in_out = buf[0];
         last_message->car_id = atoi(&buf[1]);
+        /* Copiar direccion del cliente que envia */
         memcpy(&last_message->client,&client_addr,sizeof(struct sockaddr_in));
     
         advance_writer(&cb);
@@ -262,20 +264,20 @@ int main(int argc, char *argv[])
     init_buffer(&cb,(sizeof(struct msg)));
 
 
-    /* Start reader socket */ 
+    /* Iniciando hilo de socket de lectura */ 
     pthread_create(&tid, NULL, read_messages, NULL);
     pthread_detach(tid);
 
-
+    /* Ciclo indefinido de espera de mensajes, procesamiento y respuesta*/
     while (1){
-        // Entregar tickets y aceptar tickets de salida
+        // Entrega de tickets y aceptar tickets de salida
         while(free_parking_lots > 0 ) {
 
-            /* Wait for a message to appear*/
+            /* Esperar a el socket haya recibido alg'un mensaje */
             while (its_empty(cb)) 
-                sleep(1);  // Esto es mucho D:
+                sleep(1); 
             
-            /* Cosume message*/
+            /* Consumir mensaje */
             m = read_cb(&cb);
 
             if (m->in_out=='e')
@@ -283,21 +285,19 @@ int main(int argc, char *argv[])
                 last_ticket = new_ticket();
                 --free_parking_lots;
 
-                printf("Formating time\n");
                 strftime(time_string
                         ,30
                         ,"%d%m%Y%H%M"
                         ,parking_space[last_ticket]);
 
-                // format BDDMMYYYYHHMMSSS with SSS as ticket serial
-                printf("Formating message %d\n",last_ticket);
+                // formato BDDMMYYYYHHMMSSS con SSS como ticket serial
                 sprintf(msg_buffer,"1%s%03d",time_string,last_ticket);
 
                 write_action(entrance_log,WENT_IN,last_ticket);
                 answerClient(m->client.sin_addr,msg_buffer,0); 
 
             }
-            else if (m->in_out=='s')
+            else if (m->in_out=='s' && parking_space[m->car_id] != NULL)
             {
                 ++free_parking_lots;
 
@@ -310,14 +310,14 @@ int main(int argc, char *argv[])
 
                 
             }
-            else printf("wtf?\n");
-
+            else if (m->in_out=='s' && parking_space[m->car_id] == NULL)
+                printf("Ese ticket no est'a en circulaci'on, intente de nuevo\n");
+            else printf("Accion inesperada\n");
             
         }
         
 
-
-        // Rebotar gente hasta encontrar algun ticket de salida
+        /* Indicar que no hay puestos libres o aceptar ticket de salida */
         while(free_parking_lots == 0)
         {   
             while (its_empty(cb)) 
@@ -332,12 +332,11 @@ int main(int argc, char *argv[])
                         ,parking_space[last_ticket]);
 
                 sprintf(msg_buffer,"0%sXXX",time_string);
-                printf("%s\n",msg_buffer);
 
                 answerClient(m->client.sin_addr,msg_buffer,0);  
                 write_action(entrance_log,WENT_IN,last_ticket);
             }
-            else if (m->in_out=='s'){
+            else if (m->in_out=='s' && parking_space[m->car_id] != NULL){
                 ++free_parking_lots;
 
                 last_payment = ticket_price(m->car_id);
@@ -348,10 +347,10 @@ int main(int argc, char *argv[])
                 write_action(exit_log,WENT_OUT,m->car_id);
                 
             }
-            else printf("wtf?\n");
-
-        }
-        
+            else if (m->in_out=='s' && parking_space[m->car_id] == NULL)
+                printf("Ese ticket no est'a en circulaci'on, intente de nuevo\n");
+            else printf("Accion inesperada\n");
+        }   
     }
 
 }
