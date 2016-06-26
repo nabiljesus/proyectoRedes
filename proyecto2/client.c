@@ -6,7 +6,6 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
-//#define SERVER_PORT 20684
 #define BUFFER_LEN 1024
 #define MACHINEID  3
 
@@ -42,9 +41,9 @@ void printTicket(char * info){
     ticket[12]=ticket12;
     ticket[13]="   #                                                          #";
     ticket[14]="   ############################################################";
-    //strcpy(answer,"");
 
     if (info[0]=='0'){    
+        /* Impresion del caso lleno*/
         ticket[7]="   #                                                          #";
         ticket[8]="   #                                                          #";
         ticket[10]="   #                NO HAY PUESTOS DISPONIBLES                #";
@@ -55,6 +54,7 @@ void printTicket(char * info){
         }
     }
     else if (info[0]=='1'){
+        /* Impresion del caso con puesto */
         char DD[3];
         char MM[3];
         char YYYY[5];
@@ -84,12 +84,16 @@ void printTicket(char * info){
         ;
     }
     else{
+        /* Impresion del costo */
         ticket[7]="   #                                                          #";
         ticket[8]="   #                                                          #";
-        sprintf(aux,"   #                TOTAL A PAGAR: %s,00 BsF      #",info);
+        sprintf(aux,"   #                TOTAL A PAGAR: %s,00 BsF      ",info);
+        for (i=0;i<14-strlen(info);i++)
+            strcat(aux," ");
+        strcat(aux,"#");
+
         ticket[10]=aux;
         ticket[11]="   #                                                          #";
-
         for (i=0; i<15; i++){
             printf("%s\n",ticket[i]);
         }
@@ -103,31 +107,29 @@ void printTicket(char * info){
 
 
 bool  wait_answer(char * buf){
-    printf("entro a la patria !!! \n");
+    /* Procedimiento que espera por una respuesta del servidor */
     int addr_len, numbytes;
     int status;
     struct sockaddr_in client_addr;
-    //char buf[BUFFER_LEN];
     struct msg *last_message;
     struct sockaddr_in client_address;
     int sockfd2;
     struct timeval tv;
-
+    // Tiempo máximo de espera por una respuesta. (Hasta 3 veces).
     tv.tv_sec = 30;  /* 30 Secs Timeout */
-    tv.tv_usec = 0;  // Not init'ing this can cause strange errors
+    tv.tv_usec = 0;  
 
-
-    /* Server initialization */
+    /* Parametrización del socket */
     client_address.sin_family      = AF_INET;            
     client_address.sin_port        = htons(20683); 
     client_address.sin_addr.s_addr = INADDR_ANY;         
     bzero(&(client_address.sin_zero), 8); 
 
-    /* Socket */
+    /* Creando el socket */
     sockfd2 = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd2 == -1) { perror("socket"); exit(1); }
     setsockopt(sockfd2, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,sizeof(struct timeval));
-    /* bind */
+    /* haciendo bind */
     status = bind(sockfd2
                  ,(struct sockaddr *)&client_address
                  ,sizeof(struct sockaddr));
@@ -135,8 +137,8 @@ bool  wait_answer(char * buf){
     
     addr_len = sizeof(struct sockaddr);
 
-    // printf("Pase \n");
-    printf("Esperando datos ....\n");
+    /* Esperando por los datos */
+    //printf("Esperando datos ....\n");
     numbytes = recvfrom(sockfd2, buf, 
                         BUFFER_LEN, 0, 
                         (struct sockaddr *)&client_addr,
@@ -146,17 +148,11 @@ bool  wait_answer(char * buf){
         perror("Error: Sin respuesta del servidor.");
     }
     else {
-        printf("paquete proveniente de : %s\n",inet_ntoa(client_addr.sin_addr));
-        printf("longitud del paquete en bytes: %d\n",numbytes);
+        //printf("paquete proveniente de : %s\n",inet_ntoa(client_addr.sin_addr));
+        //printf("longitud del paquete en bytes: %d\n",numbytes);
         buf[numbytes] = '\0';
-        printf("el paquete contiene: %s\n", buf);      //Aqui se debería imprimir.
+        //printf("el paquete contiene: %s\n", buf);      //Aqui se debería imprimir.
     }
-    /*last_message = (struct msg*) get_writer(cb);
-    last_message->in_out = buf[0];
-    last_message->car_id = atoi(&buf[1]);
-    last_message->client = client_addr.sin_addr.s_addr;
-    advance_writer(&cb);*/
-    // printf("Escribi\n");
     close(sockfd2);
     return (numbytes > 0);
 
@@ -263,14 +259,14 @@ int main(int argc, char *argv[])
     their_addr.sin_addr = *((struct in_addr *)he->h_addr);
     bzero(&(their_addr.sin_zero), 8); /* pone en cero el resto */
     /* enviamos el mensaje */
-    while (tries < 3) {
+    while (tries < 3) { //En caso de que el servidor este apagdo, intenta a lo sumo 3 veces.
         numbytes=sendto(sockfd,
                         myOpSerial,
                         strlen(myOpSerial),
                         0,(struct sockaddr *)&their_addr,
                         sizeof(struct sockaddr));
 
-        printf("enviados %d bytes hacia %s\n--------\n",numbytes,inet_ntoa(their_addr.sin_addr));
+//        printf("enviados %d bytes hacia %s\n--------\n",numbytes,inet_ntoa(their_addr.sin_addr));
         if ( numbytes < 0) {
             perror("Error de conexion.");
         }
@@ -290,13 +286,7 @@ int main(int argc, char *argv[])
 
         }
         else{
-            if (myOpSerial[0]=='e'){
-                printTicket(answer);
-
-            }
-            else{
-
-            }
+            printTicket(answer);
             close(sockfd);
             exit (0);
         }
@@ -306,61 +296,3 @@ int main(int argc, char *argv[])
     close(sockfd);
     exit (0);
 }
-
-
-
-
-//----------------------------
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <errno.h>
-//#include <string.h>
-//#include <unistd.h>
-//#include <netdb.h>
-//#include <arpa/inet.h>
-//#include <sys/types.h>
-//#define SERVER_PORT 4321
-//#define BUFFER_LEN 1024
-//
-//int main(int argc, char *argv[])
-//{
-    //int sockfd; /* descriptor a usar con el socket */
-    //struct sockaddr_in their_addr; /* almacenara la direccion IP y numero de puerto del servidor */
-    //struct hostent *he; /* para obtener nombre del host */
-    //int numbytes; /* conteo de bytes a escribir */
-//    
-    //if (argc != 3) {
-        //fprintf(stderr,"\nuso: %s cliente hostname mensaje\n", argv[0]);
-        //exit(1);
-    //}
-    ///* convertimos el hostname a su direccion IP */
-    //if ((he=gethostbyname(argv[1])) == NULL) {
-        //perror("gethostbyname");
-        //exit(1);
-    //}
-    ///* Creamos el socket */
-    //if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
-        //perror("socket");
-        //exit(2);
-    //}
-    ///* a donde mandar */
-    //their_addr.sin_family = AF_INET; /* usa host byte order */
-    //their_addr.sin_port = htons(SERVER_PORT); /* usa network byte order */
-    //their_addr.sin_addr = *((struct in_addr *)he->h_addr);
-    //bzero(&(their_addr.sin_zero), 8); /* pone en cero el resto */
-    ///* enviamos el mensaje */
-    //numbytes=sendto(sockfd,
-                    //argv[2],
-                    //strlen(argv[2]),
-                    //0,(struct sockaddr *)&their_addr,
-                    //sizeof(struct sockaddr));
-//
-    //if ( numbytes == -1) {
-        //perror("sendto");
-        //exit(2);
-    //}
-    //printf("enviados %d bytes hacia %s\n",numbytes,inet_ntoa(their_addr.sin_addr));
-    ///* cierro socket */
-    //close(sockfd);
-    //exit (0);
-//}
