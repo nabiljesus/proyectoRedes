@@ -23,7 +23,7 @@ void printTicket(char * info){
     system("cls");
     system("clear");
 
-    for (i=0;i<20;i++)
+    for (i=0;i<3;i++)
         printf("\n");
     ticket[0]="   ############################################################";
     ticket[1]="   #      ____   ____     __  __            _       _         #";
@@ -99,7 +99,7 @@ void printTicket(char * info){
         }
     }
 
-    for (i=0;i<20;i++)
+    for (i=0;i<3;i++)
         printf("\n");
 
 
