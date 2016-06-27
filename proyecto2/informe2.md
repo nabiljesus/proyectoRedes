@@ -8,7 +8,7 @@ Para realizar la transmisión de la información se decidió utilizar Protocol d
 
 Debido a que se requiere un tiempo de respuesta inmediato para minimizar, en lo posible, el tiempo de espera en la entra o salida de los automoviles en el estacionamiento, es necesario que la velocidad de transmisión del paquete se maximize. UDP se suele utilizar cuando se buscan transmisiones con una cantidad de información baja en los paquetes y altas velocidades de transferencia (aunque se puedan perder algunos paquetes como efecto adverso) por lo que para el caso actual puede satisfacer la solicitud. 
 
-El protocolo TCP, sin embargo, también pudiese satisfacer la 
+El protocolo TCP, sin embargo, también pudiese satisfacer los requisitos de este proyecto aunque, debido los mecanismos de establecer y verificar la conexión, no es el tipo de socket ideal.
 
 2. Identifique todos los mensajes del sistema, indicando: el formato del mismo,
 su tamaño en bytes, quién genera el mensaje y quién lo recibe y procesa.
