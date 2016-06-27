@@ -1,4 +1,7 @@
+\newpage
+
 #Justificaciones
+
 ##¿Qué tipo de sockets decidió emplear?
 
 Para realizar la transmisión de la información se decidió utilizar Protocol de Datagramas de Usuario (User Datagram Protocol en inglés), un protocolo no orientado a conexión. El Protocolo UDP es un protocolo de la capa de transporte para uso con el protocolo IP de la capa de red. El protocolo UDP proveé un servicio de intercambio de datagramas a través de la red en modo Best-Effort, es decir, que no puede asegurar la entrega de los datagramas o paquetes. 
@@ -53,11 +56,7 @@ Cuando ingresa/egresa un nuevo automovil, el cliente emite un mensaje al servido
 Este mensaje es recibido y procesado por el servidor mediante el uso de un hilo dedicado a ello. Este emite una respuesta al cliente (ver Mensajes enviados por el servidor).
 
 
-3. Realice el diseño completo del protocolo de comunicación que construya y
-describa como opera el mismo, debe usar UDP como capa de transporte.
-Incluya el punto de vista de los cambios de estado de las entidades que se
-comunican. Se sugiere usar diagramas de máquinas de estados finitos y
-facilitar la explicación de como es la actividad del protocolo.
+## Diseño de protocolo
 
 Aquí se puede observar que el servidor inicia en el estado q0 (puestos disponibles),  luego al recibir una petición de entrada verifica la existencia de puestos y entrega el ticket  o notifica que no hay puestos y regresa al estado de diponible  o lleno dependiendo del caso. En caso de que se reciba una petición de salida se calcula el costo que debe pagar el usuario y se le notifica al usuario, el caso de "imprimir error de ticket" nunca ocurre ya que esto se maneja de forma automática con los códigos de barra, pero se agrego como protección al servidor.
 
@@ -71,9 +70,7 @@ De forma análoga ocurre cuando el cliente solicita la salida, como resultado se
 
 ![Automata de clientes](cliente.png "Automata de clientes")
 
-4. Describa aspectos del proyecto que funcionan según el enunciado y cuales
-no. Cualquier requerimiento no desarrollado o que contenga fallas, deberá
-ser señalado claramente.
+## Aspectos funcionales
 
 Para la implementación del proyecto, pensando en la confiabilidad de la entrega de los clientes al servidor y visceversa decidimos trabajar con un thread en el servidor el cual se encargará únicamente de almacenar todos los mensajes que son recibidos, inicialmente este trabajo lo realizaba la ejecución principal del programa, pero entre la recepción de un mensaje, el procesamiento y respuesta al mismo podían llegar peticiones de otros clientes las cuales se perderían. Para poder llevar a cabo esta idea se implementó un buffer circular en el cual el thread escribe todos los mensajes que recibe, mientras que el procedimiento principal se encuentra a la espera de escrituras en el buffer para procesar y responder estos mensajes en un socket de solo salida, de esta manera el servidor ofrece alta disponibilidad a sus clientes aprovechando el modelo concurrente de productor consumidor.
 
