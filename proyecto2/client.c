@@ -33,7 +33,7 @@ void printTicket(char * info){
     char ticket12[60];
     char aux[60];
     char aux2[60];
-    system("cls");
+    //system("cls"); //Para windows.
     system("clear");
 
     for (i=0;i<3;i++)
@@ -101,7 +101,7 @@ void printTicket(char * info){
         ticket[7]="   #                                                          #";
         ticket[8]="   #                                                          #";
         sprintf(aux,"   #                TOTAL A PAGAR: %s,00 BsF      ",info+1);
-        for (i=0;i<14-strlen(info);i++)
+        for (i=0;i<15-strlen(info);i++)
             strcat(aux," ");
         strcat(aux,"#");
 
