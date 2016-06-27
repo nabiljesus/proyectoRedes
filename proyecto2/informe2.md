@@ -9,6 +9,18 @@ Para realizar la transmisión de la información se decidió utilizar Protocol d
 2. Identifique todos los mensajes del sistema, indicando: el formato del mismo,
 su tamaño en bytes, quién genera el mensaje y quién lo recibe y procesa.
 
+El cliente...
+
+Cuando el servidor recibe una petición de un ticket nuevo por parte de un cliente, el primero envía un mensaje de 16 bytes en formato BDDMMYYYYHHMMSSS
+el cual se encuentra representado en el siguiente formato:
+
+* B: Booleano indicando si hay puestos disponibles
+* D: Día en el cual se creó el ticket
+* M: Mes
+* Y: Año
+* H: Hora
+* M: Minutos
+* SSS: Código del ticket, el cual es un número entre el 000 y el 199 ó XXX en el caso de que no se haya generado el ticket debido a limite de carros alcanzado.
 
 3. Realice el diseño completo del protocolo de comunicación que construya y
 describa como opera el mismo, debe usar UDP como capa de transporte.
