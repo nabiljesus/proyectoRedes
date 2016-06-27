@@ -1,3 +1,11 @@
+/** 
+ *   Este archivo implementa el cliente en el modelo cliente/servidor
+ *   utilizado en las máquinas de ticket.
+ *
+ *   @autor Nabil  Márquez  11-10683
+ *   @autor Javier López    11-10552
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -13,6 +21,11 @@ typedef int bool;
 #define true 1
 #define false 0
 
+/* 
+ *  Procedimiento para imprimir en pantalla el ticket
+ *
+ *   @param info   Datos de ticket
+ */
 void printTicket(char * info){
     char * ticket[15];
     int i;
@@ -110,6 +123,12 @@ void printTicket(char * info){
 }
 
 
+/* 
+ *  Procedimiento que abre un socket y espera una respuesta del servidor
+ *
+ *   @param buf     Buffer para almacenar la respuesta
+ *   @return        Indica si el mensaje se recibió de forma correcta
+ */
 bool  wait_answer(char * buf){
     /* Procedimiento que espera por una respuesta del servidor */
     int addr_len, numbytes;
@@ -142,7 +161,6 @@ bool  wait_answer(char * buf){
     addr_len = sizeof(struct sockaddr);
 
     /* Esperando por los datos */
-    //printf("Esperando datos ....\n");
     numbytes = recvfrom(sockfd2, buf, 
                         BUFFER_LEN, 0, 
                         (struct sockaddr *)&client_addr,
@@ -152,10 +170,7 @@ bool  wait_answer(char * buf){
         perror("Error: Sin respuesta del servidor.");
     }
     else {
-        //printf("paquete proveniente de : %s\n",inet_ntoa(client_addr.sin_addr));
-        //printf("longitud del paquete en bytes: %d\n",numbytes);
         buf[numbytes] = '\0';
-        //printf("el paquete contiene: %s\n", buf);      //Aqui se debería imprimir.
     }
     close(sockfd2);
     return (numbytes > 0);
@@ -262,14 +277,14 @@ int main(int argc, char *argv[])
     their_addr.sin_addr = *((struct in_addr *)he->h_addr);
     bzero(&(their_addr.sin_zero), 8); /* pone en cero el resto */
     /* enviamos el mensaje */
-    while (tries < 3) { //En caso de que el servidor este apagdo, intenta a lo sumo 3 veces.
+    while (tries < 3) { 
+    //En caso de que el servidor este apagdo, intenta a lo sumo 3 veces.
         numbytes=sendto(sockfd,
                         myOpSerial,
                         strlen(myOpSerial),
                         0,(struct sockaddr *)&their_addr,
                         sizeof(struct sockaddr));
 
-//        printf("enviados %d bytes hacia %s\n--------\n",numbytes,inet_ntoa(their_addr.sin_addr));
         if ( numbytes < 0) {
             perror("Error de conexion.");
         }
@@ -277,7 +292,6 @@ int main(int argc, char *argv[])
         if(!(wait_answer(answer))){
             tries++;                /* incrementa el contador y vuelve a intentar */
             fprintf(stderr, "Error al conectarse con el servidor. Intento %d de 3.\n",tries);
-            //exit(2);
             if (tries==3){
                 perror("Tiempo de espera agotado.");
                 exit(2);
@@ -295,7 +309,6 @@ int main(int argc, char *argv[])
         }
     }
     /* cierro socket */
-    //answerClient(their_addr.sin_addr,"301019941628",0);
     close(sockfd);
     exit (0);
 }

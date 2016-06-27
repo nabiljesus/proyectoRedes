@@ -1,3 +1,13 @@
+/** 
+ *   Este archivo implementa el servidor central, el cual trabaja con un thread
+ *   de comunicación para escuchar peticiones, y otro para el procesamiento 
+ *   y respuesta de estos mensajes. 
+ *
+ *   @autor Javier López    11-10552
+ *   @autor Nabil  Márquez  11-10683
+ */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -16,8 +26,8 @@
 
 #include "circular_buffer.h"
 
-
-#define RESPONSE_PORT 20683 // Puerto para socket de respuesta
+/* El primer puerto se especifica por comando, el segundo aquí*/
+#define RESPONSE_PORT 20683 // Puerto para socket de respuesta 11-10683
 #define BUFFER_LEN    1024  // Longitud del buffer de escritura para el socket
 
 // Constantes de estacionamiento
