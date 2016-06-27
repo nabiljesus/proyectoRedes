@@ -32,9 +32,15 @@ Incluya el punto de vista de los cambios de estado de las entidades que se
 comunican. Se sugiere usar diagramas de máquinas de estados finitos y
 facilitar la explicación de como es la actividad del protocolo.
 
+Aquí se puede observar que el servidor inicia en el estado q0 (puestos disponibles),  luego al recibir una petición de entrada verifica la existencia de puestos y entrega el ticket  o notifica que no hay puestos y regresa al estado de diponible  o lleno dependiendo del caso. En caso de que se reciba una petición de salida se calcula el costo que debe pagar el usuario y se le notifica al usuario, el caso de "imprimir error de ticket" nunca ocurre ya que esto se maneja de forma automática con los códigos de barra, pero se agrego como protección al servidor.
+
 ![Automata del servidor](server.png "Automata del servidor")
 
 ---
+
+Un cliente al realizar una petición de entrada pasa a un estado de espera el cual se repite hasta 3 veces (en caso de no respuesta por parte del servidor), en el caso de llegar a recibir un mensaje procede a imprimir el ticket del usuario o un mensaje indicando qu el estacionamiento está lleno. 
+
+De forma análoga ocurre cuando el cliente solicita la salida, como resultado se imprime el pago a realizar.
 
 ![Automata de clientes](cliente.png "Automata de clientes")
 
@@ -49,6 +55,8 @@ Los tickets se implementaron de tal manera que el usuario no intervenga en el pr
 Al cierre del día las bitácoras de salida no necesitan actualizaciones, ya que cada operación de entrada o salida queda escrita al momento. El servidor esta diseñado para estar activo de forma continua.
 
 Los servicios simultáneos son recibidos en el orden en que el flujo de la red los proporciona, el socket siempre se encuentra activo en el hilo paralelo.
+
+La pérdida de información desde el servidor hacia el usuario es manejado por el cliente el cual realiza hasta 3 esperas temporizadas de 30 segundos para desistir.
 
 6. Opcional: Construya un aplicación confiable, que garantice la entrega, evite
 información duplicada y pérdida de información. Todos estos controles
