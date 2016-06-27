@@ -83,11 +83,11 @@ void printTicket(char * info){
         }
         ;
     }
-    else{
+    else if (info[0]=='X'){
         /* Impresion del costo */
         ticket[7]="   #                                                          #";
         ticket[8]="   #                                                          #";
-        sprintf(aux,"   #                TOTAL A PAGAR: %s,00 BsF      ",info);
+        sprintf(aux,"   #                TOTAL A PAGAR: %s,00 BsF      ",info+1);
         for (i=0;i<14-strlen(info);i++)
             strcat(aux," ");
         strcat(aux,"#");
@@ -97,6 +97,10 @@ void printTicket(char * info){
         for (i=0; i<15; i++){
             printf("%s\n",ticket[i]);
         }
+    }
+    else
+    {
+        perror("Server error. \n");
     }
 
     for (i=0;i<3;i++)
@@ -206,7 +210,6 @@ int main(int argc, char *argv[])
         exit(1);
     }
     else{
-        printf("%s\n", argv[aux]);
         strcpy(myOpSerial, argv[aux]); //copiando la operacion
     }
 
