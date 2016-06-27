@@ -1,3 +1,13 @@
+/** 
+ *   Este archivo implementa el servidor central, el cual trabaja con un thread
+ *   de comunicación para escuchar peticiones, y otro para el procesamiento 
+ *   y respuesta de estos mensajes. 
+ *
+ *   @autor Javier López    11-10552
+ *   @autor Nabil  Márquez  11-10683
+ */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -16,8 +26,8 @@
 
 #include "circular_buffer.h"
 
-
-#define RESPONSE_PORT 20683 // Puerto para socket de respuesta
+/* El primer puerto se especifica por comando, el segundo aquí*/
+#define RESPONSE_PORT 20683 // Puerto para socket de respuesta 11-10683
 #define BUFFER_LEN    1024  // Longitud del buffer de escritura para el socket
 
 // Constantes de estacionamiento
@@ -53,7 +63,7 @@ int last_payment;    // U'ltimo pago realizado
  *   Procedimiento que consigue un puesto vacío, almacena el tiempo en 
  *   el que ocurrio y entrega un entero con el numero de ticket asociado 
  * 
- *   @return      N'umero de ticket asociado 
+ *   @return      Número de ticket asociado 
  */
 int new_ticket(){
     int i = 0;
@@ -73,10 +83,10 @@ int new_ticket(){
 }
 
 /*
- *   Procedimiento que indica cuando debe pagar un cliente dada una posici'on
+ *   Procedimiento que indica cuando debe pagar un cliente dada una posición
  *   del arreglo de tiempos.
  *
- *   @param lot   indica la posici'on en la cual esta almacenado el tiempo  
+ *   @param lot   indica la posición en la cual esta almacenado el tiempo  
  *   @return      precio que se debe pagar por el ticket  
  */
 int ticket_price(int lot){
@@ -102,7 +112,7 @@ int ticket_price(int lot){
 /* 
  *   Respues a los clientes luego de pedir o entregar un ticket.
  *
- *   @param addr     Direcci'on al cual se debe enviar el mensaje
+ *   @param addr     Dirección al cual se debe enviar el mensaje
  *   @param info     Cadena de caracteres con el mensaje a enviar
  */
 void answerClient(struct in_addr addr, char info[]){
@@ -138,7 +148,14 @@ void answerClient(struct in_addr addr, char info[]){
     
 }
 
-/* Escribir bitacora para el ticket i, el cual entra o sale*/
+/* 
+ *  Procedimiento que escribe en bitácora para el ticket i, si entra o sale,
+ *  o no pudo entrar.
+ *
+ *   @param outputfile     string con el nombre del archivo de bitácora
+ *   @param coming_inside  indicador de entrada, salida o lleno
+ *   @param i              posición del arreglo de tickets/hora
+ */
 void write_action(char *output_file,int coming_inside,int i){
     char action[8];
     char time_buffer[30];
@@ -181,7 +198,11 @@ void write_action(char *output_file,int coming_inside,int i){
     }
 }
 
-/* Procedimiento del thread. Ciclo para escuchar en puerto y agregar datos a buffer */
+/* 
+ *  Procedimiento del thread. Ciclo para escuchar en puerto y agregar 
+ *  datos a buffer
+ */
+
 void * read_messages(){
     int addr_len, numbytes;
     int status;
@@ -242,15 +263,16 @@ void * read_messages(){
 int main(int argc, char *argv[])
 {
     int free_parking_lots = PARKING_LOT_SIZE;
-    char *entrance_log,*exit_log; // Strings for log files
+    char *entrance_log,*exit_log; // Strings para log files
     char msg_buffer[30];
     char time_string[30];
     
-    int status;      // Auxiliary to check procedure returning values
-    int i;
-    int last_ticket;
-    struct msg *m;    // To read messages
-    pthread_t tid;
+    /* Auxiliares */
+    int status;       // Estatus de procedimientos
+    int i;            // Iteraciones
+    int last_ticket;  // Último ticket
+    struct msg *m;    // Auxiliar para lectura de mensajes
+    pthread_t tid;    // Thread para socket
     
 
     if (argc != 7) {
