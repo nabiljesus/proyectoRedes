@@ -1,8 +1,5 @@
-#Marco teórico
-##Análisis preliminar
-
-##Justificaciones
-1. ¿Qué tipo de sockets decidió emplear?
+#Justificaciones
+##¿Qué tipo de sockets decidió emplear?
 
 Para realizar la transmisión de la información se decidió utilizar Protocol de Datagramas de Usuario (User Datagram Protocol en inglés), un protocolo no orientado a conexión. El Protocolo UDP es un protocolo de la capa de transporte para uso con el protocolo IP de la capa de red. El protocolo UDP proveé un servicio de intercambio de datagramas a través de la red en modo Best-Effort, es decir, que no puede asegurar la entrega de los datagramas o paquetes. 
 
@@ -10,13 +7,16 @@ Debido a que se requiere un tiempo de respuesta inmediato para minimizar, en lo 
 
 El protocolo TCP, sin embargo, también pudiese satisfacer los requisitos de este proyecto aunque, debido los mecanismos de establecer y verificar la conexión, no sería el tipo de socket ideal para el requerimiento.
 
-2. Identifique todos los mensajes del sistema, indicando: el formato del mismo,
+##Mensajes del sistema
+
+, indicando: el formato del mismo,
 su tamaño en bytes, quién genera el mensaje y quién lo recibe y procesa.
 
-El cliente...
+###Mensajes enviados por el servidor
 
-Cuando el servidor recibe una petición de un ticket nuevo por parte de un cliente, el primero envía un mensaje de 16 bytes en formato BDDMMYYYYHHMMSSS
-el cual se encuentra representado en el siguiente formato:
+####Caso de puesto disponible/no disponible
+
+Cuando el servidor recibe una petición de un ticket nuevo por parte de un cliente, el primero envía un mensaje de 16 bytes en formato BDDMMYYYYHHMMSSS, en el cual cada campo representa:
 
 * B: Booleano indicando si hay puestos disponibles
 * D: Día en el cual se creó el ticket
@@ -25,6 +25,32 @@ el cual se encuentra representado en el siguiente formato:
 * H: Hora
 * M: Minutos
 * SSS: Código del ticket, el cual es un número entre el 000 y el 199 ó XXX en el caso de que no se haya generado el ticket debido a limite de carros alcanzado.
+
+Este mensaje es recibido y procesado por algún cliente.
+
+####Caso salida de automovil con serial existente en el estacionamiento
+
+Cuando el servidor recibe una petición de salida por parte de un cliente con serial existente en el estacionamiento, el primero envía un mensaje de 16 bytes en formato XMMMMMMMMMMMMMMM, en el cual cada campo representa:
+
+* X: Carácter 'X' utilizado para el determinismo de los caso al momento del parseo.
+* MMMMMMMMMMMMMMM: Monto a cancelar.
+
+Este mensaje es recibido y procesado por algún cliente.
+
+####Caso salida de automovil con serial inexistente en el estacionamiento
+
+Este caso, en la vida real, no procede ya que es necesario escanear el código de barras del ticket emitido y no introducir el serial manualmente. En el supuesto caso de un serial incorrecto, el serial no envía ningún mensaje y el cliente se queda en espera hasta obtener un mensaje de "Tiempo de espera agotado".
+
+###Mensajes enviados por el cliente
+
+####Entrada/salida de vehículo al estacionamiento
+
+Cuando ingresa/egresa un nuevo automovil, el cliente emite un mensaje al servidor. Este mensaje consta de 4 bytes representado en el siguiente formato: OSSS, en el cual cada campo representa:
+
+* O:   Tipo de Operación a realizar ('e' para entrada o 's' para salida).
+* SSS: Serial del vehículo (Para el caso de entrada, esta información es ignorada por el servidor). 
+
+Este mensaje es recibido y procesado por el servidor mediante el uso de un hilo dedicado a ello. Este emite una respuesta al cliente (ver Mensajes enviados por el servidor).
 
 
 3. Realice el diseño completo del protocolo de comunicación que construya y
