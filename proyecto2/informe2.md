@@ -4,16 +4,13 @@
 
 ##¿Qué tipo de sockets decidió emplear?
 
-Para realizar la transmisión de la información se decidió utilizar Protocol de Datagramas de Usuario (User Datagram Protocol en inglés), un protocolo no orientado a conexión. El Protocolo UDP es un protocolo de la capa de transporte para uso con el protocolo IP de la capa de red. El protocolo UDP proveé un servicio de intercambio de datagramas a través de la red en modo Best-Effort, es decir, que no puede asegurar la entrega de los datagramas o paquetes. 
+Para realizar la transmisión de la información se decidió utilizar Protocol de Datagramas de Usuario (User Datagram Protocol en inglés), un protocolo no orientado a conexión. El Protocolo UDP es un protocolo de la capa de transporte para uso con el protocolo IP de la capa de red. El protocolo UDP provee un servicio de intercambio de datagramas a través de la red en modo Best-Effort, es decir, que no puede asegurar la entrega de los datagramas o paquetes. 
 
-Debido a que se requiere un tiempo de respuesta inmediato para minimizar, en lo posible, el tiempo de espera en la entra o salida de los automoviles en el estacionamiento, es necesario que la velocidad de transmisión del paquete se maximize. UDP se suele utilizar cuando se buscan transmisiones con una cantidad de información baja en los paquetes y altas velocidades de transferencia (aunque se puedan perder algunos paquetes como efecto adverso) por lo que para el caso actual, se puede satisfacer la solicitud. 
+Debido a que se requiere un tiempo de respuesta inmediato para minimizar, en lo posible, el tiempo de espera en la entra o salida de los automóviles en el estacionamiento, es necesario que la velocidad de transmisión del paquete se maximize. UDP se suele utilizar cuando se buscan transmisiones con una cantidad de información baja en los paquetes y altas velocidades de transferencia (aunque se puedan perder algunos paquetes como efecto adverso) por lo que para el caso actual, se puede satisfacer la solicitud. 
 
 El protocolo TCP, sin embargo, también pudiese satisfacer los requisitos de este proyecto aunque, debido los mecanismos de establecer y verificar la conexión, no sería el tipo de socket ideal para el requerimiento.
 
 ##Mensajes del sistema
-
-, indicando: el formato del mismo,
-su tamaño en bytes, quién genera el mensaje y quién lo recibe y procesa.
 
 ###Mensajes enviados por el servidor
 
@@ -29,13 +26,13 @@ Cuando el servidor recibe una petición de un ticket nuevo por parte de un clien
 * M: Minutos
 * SSS: Código del ticket, el cual es un número entre el 000 y el 199 ó XXX en el caso de que no se haya generado el ticket debido a limite de carros alcanzado.
 
-Este mensaje es recibido y procesado por algún cliente.
+Este mensaje es recibido y procesado por el cliente.
 
 ####Caso salida de automovil con serial existente en el estacionamiento
 
 Cuando el servidor recibe una petición de salida por parte de un cliente con serial existente en el estacionamiento, el primero envía un mensaje de 16 bytes en formato XMMMMMMMMMMMMMMM, en el cual cada campo representa:
 
-* X: Carácter 'X' utilizado para el determinismo de los caso al momento del parseo.
+* X: Caracter 'X' utilizado para el determinismo de los caso al momento del parseo.
 * MMMMMMMMMMMMMMM: Monto a cancelar.
 
 Este mensaje es recibido y procesado por algún cliente.
