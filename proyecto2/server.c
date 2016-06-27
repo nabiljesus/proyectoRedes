@@ -85,7 +85,12 @@ int ticket_price(int lot){
 }
 
 
-/* Respues a los clientes luego de pedir o entregar un ticket */
+/* 
+ *   Respues a los clientes luego de pedir o entregar un ticket.
+ *
+ *
+ *
+ */
 bool answerClient(struct in_addr addr, char info[], bool notFull){
     int socks; /* descriptor a usar con el socket */
     struct sockaddr_in out_addr; /* almacenara la direccion IP y numero de puerto del cliente */
