@@ -11,4 +11,4 @@ client: client.c
 
 
 clean:
-	rm -rf *.o server client -fsyntax-only
+	rm -rf *.o server client

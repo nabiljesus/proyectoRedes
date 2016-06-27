@@ -26,6 +26,7 @@
 #define HOUR_FRACTION_PRICE 30
 
 // Indicar si la accion es de entrada o salida
+#define FULL     2
 #define WENT_IN  1
 #define WENT_OUT 0
 
@@ -349,7 +350,7 @@ int main(int argc, char *argv[])
                 sprintf(msg_buffer,"0%sXXX",time_string);
 
                 answerClient(m->client.sin_addr,msg_buffer);  
-                write_action(entrance_log,WENT_IN,last_ticket);
+                write_action(entrance_log,FULL,last_ticket);
             }
             else if (m->in_out=='s' && parking_space[m->car_id] != NULL){
                 ++free_parking_lots;
