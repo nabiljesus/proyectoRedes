@@ -32,11 +32,23 @@ Incluya el punto de vista de los cambios de estado de las entidades que se
 comunican. Se sugiere usar diagramas de máquinas de estados finitos y
 facilitar la explicación de como es la actividad del protocolo.
 
+![Automata del servidor](server.png "Automata del servidor")
+
+---
+
+![Automata de clientes](cliente.png "Automata de clientes")
+
 4. Describa aspectos del proyecto que funcionan según el enunciado y cuales
 no. Cualquier requerimiento no desarrollado o que contenga fallas, deberá
 ser señalado claramente.
 
-5. La implementación es en lenguaje C.
+Para la implementación del proyecto, pensando en la confiabilidad de la entrega de los clientes al servidor y visceversa decidimos trabajar con un thread en el servidor el cual se encargará únicamente de almacenar todos los mensajes que son recibidos, inicialmente este trabajo lo realizaba la ejecución principal del programa, pero entre la recepción de un mensaje, el procesamiento y respuesta al mismo podían llegar peticiones de otros clientes las cuales se perderían. Para poder llevar a cabo esta idea se implementó un buffer circular en el cual el thread escribe todos los mensajes que recibe, mientras que el procedimiento principal se encuentra a la espera de escrituras en el buffer para procesar y responder estos mensajes en un socket de solo salida, de esta manera el servidor ofrece alta disponibilidad a sus clientes aprovechando el modelo concurrente de productor consumidor.
+
+Los tickets se implementaron de tal manera que el usuario no intervenga en el proceso del manejo del identificador único para los puestos. Cuando un cliente solicita un ticket, se le asigna un "código de barra" el cual contine un entero entre 0 y 199 (serial), independientemente del serial proporcionado, al momento del salir, el ticket leido debe contener uno de estos seriales
+
+Al cierre del día las bitácoras de salida no necesitan actualizaciones, ya que cada operación de entrada o salida queda escrita al momento. El servidor esta diseñado para estar activo de forma continua.
+
+Los servicios simultáneos son recibidos en el orden en que el flujo de la red los proporciona, el socket siempre se encuentra activo en el hilo paralelo.
 
 6. Opcional: Construya un aplicación confiable, que garantice la entrega, evite
 información duplicada y pérdida de información. Todos estos controles
