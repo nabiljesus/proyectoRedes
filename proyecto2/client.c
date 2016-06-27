@@ -52,8 +52,9 @@ void printTicket(char * info){
     ticket[11]="   #                       Serial:  SSS                       #";
     sprintf(ticket12,"   #                       Puerta:  %d                         #",MACHINEID);
     ticket[12]=ticket12;
-    ticket[13]="   #                                                          #";
-    ticket[14]="   ############################################################";
+    ticket[13]="   #              Bar Code: ░▓▒ ░▓▒ ░▒ ░▓▓▒  ░▓▒              #";
+    ticket[14]="   #                                                          #";
+    ticket[15]="   ############################################################";
 
     if (info[0]=='0'){    
         /* Impresion del caso lleno*/
@@ -62,7 +63,7 @@ void printTicket(char * info){
         ticket[10]="   #                NO HAY PUESTOS DISPONIBLES                #";
         ticket[11]="   #                                                          #";
 
-        for (i=0; i<15; i++){
+        for (i=0; i<16; i++){
             printf("%s\n",ticket[i]);
         }
     }
@@ -91,7 +92,7 @@ void printTicket(char * info){
         ticket[10]=aux;
         sprintf(aux2,"   #                       Serial:  %s                       #", sss);
         ticket[11]=aux2;
-        for (i=0; i<15; i++){
+        for (i=0; i<16; i++){
             printf("%s\n",ticket[i]);
         }
         ;
@@ -107,7 +108,7 @@ void printTicket(char * info){
 
         ticket[10]=aux;
         ticket[11]="   #                                                          #";
-        for (i=0; i<15; i++){
+        for (i=0; i<16; i++){
             printf("%s\n",ticket[i]);
         }
     }
