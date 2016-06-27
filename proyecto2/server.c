@@ -154,10 +154,11 @@ void write_action(char *output_file,int coming_inside,int i){
     /* Creacion de string para el log*/
     strftime(time_buffer, 30, "%d/%m/%Y %H:%M:%S", parking_space[i]);
 
-    if (coming_inside == 2 ){
+    if (coming_inside == FULL ){
         fprintf(log_file
                ,"%s | Carro no pudo entrar por estacionamiento lleno \n"
                ,time_buffer);
+        fclose(log_file);
         return;
     }
 
@@ -298,8 +299,8 @@ int main(int argc, char *argv[])
         while(free_parking_lots > 0 ) {
 
             /* Esperar a el socket haya recibido alg'un mensaje */
-            while (its_empty(cb)) 
-                sleep(1); 
+            while (its_empty(cb))
+                sleep(0.5); 
             
             /* Consumir mensaje */
             m = read_cb(&cb);
@@ -345,7 +346,7 @@ int main(int argc, char *argv[])
         while(free_parking_lots == 0)
         {   
             while (its_empty(cb)) 
-                sleep(1); 
+                sleep(0.5); 
 
             m = read_cb(&cb);
 
