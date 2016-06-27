@@ -48,6 +48,12 @@ struct circular_buffer cb;                     // Buffer ciruclar para mensajes
 int listen_port;     // Puerto a escuchar
 int last_payment;    // U'ltimo pago realizado
 
+/*
+ *   Procedimiento que consigue un puesto vacío, almacena el tiempo en 
+ *   el que ocurrio y entrega un entero con el numero de ticket asociado 
+ * 
+ *   @return      N'umero de ticket asociado 
+ */
 int new_ticket(){
     int i = 0;
     time_t time_data;
@@ -65,6 +71,13 @@ int new_ticket(){
     return i;
 }
 
+/*
+ *   Procedimiento que indica cuando debe pagar un cliente dada una posici'on
+ *   del arreglo de tiempos.
+ *
+ *   @param lot   indica la posici'on en la cual esta almacenado el tiempo  
+ *   @return      precio que se debe pagar por el ticket  
+ */
 int ticket_price(int lot){
     double seconds;
     double hours;
@@ -88,21 +101,18 @@ int ticket_price(int lot){
 /* 
  *   Respues a los clientes luego de pedir o entregar un ticket.
  *
- *
- *
+ *   @param addr     Direcci'on al cual se debe enviar el mensaje
+ *   @param info     Cadena de caracteres con el mensaje a enviar
  */
-bool answerClient(struct in_addr addr, char info[], bool notFull){
+void answerClient(struct in_addr addr, char info[]){
     int socks; /* descriptor a usar con el socket */
     struct sockaddr_in out_addr; /* almacenara la direccion IP y numero de puerto del cliente */
     int sentbytes; /* conteo de bytes a escribir */
-    char BoolDateTime[19];
 
     out_addr.sin_family = AF_INET; /* usa host byte order */
     out_addr.sin_port = htons(RESPONSE_PORT); /* usa network byte order */
     out_addr.sin_addr = addr;
     bzero(&(out_addr.sin_zero), 8); /* pone en cero el resto */
-    snprintf (BoolDateTime, 1, "%d",notFull);
-    strcat(BoolDateTime, info); 
     /* enviamos el mensaje */
 
     /* Creamos el socket */
@@ -112,8 +122,8 @@ bool answerClient(struct in_addr addr, char info[], bool notFull){
     }
 
     sentbytes=sendto(socks,
-                    BoolDateTime,
-                    strlen(BoolDateTime),
+                    info,
+                    strlen(info),
                     0,(struct sockaddr *)&out_addr,
                     sizeof(struct sockaddr));
 
@@ -299,7 +309,7 @@ int main(int argc, char *argv[])
                 sprintf(msg_buffer,"1%s%03d",time_string,last_ticket);
 
                 write_action(entrance_log,WENT_IN,last_ticket);
-                answerClient(m->client.sin_addr,msg_buffer,0); 
+                answerClient(m->client.sin_addr,msg_buffer); 
 
             }
             else if (m->in_out=='s' && parking_space[m->car_id] != NULL)
@@ -308,8 +318,8 @@ int main(int argc, char *argv[])
 
                 last_payment = ticket_price(m->car_id);
 
-                sprintf(msg_buffer,"%d",last_payment);
-                answerClient(m->client.sin_addr,msg_buffer,0);
+                sprintf(msg_buffer,"X%d",last_payment);
+                answerClient(m->client.sin_addr,msg_buffer);
 
                 write_action(exit_log,WENT_OUT,m->car_id);
 
@@ -338,7 +348,7 @@ int main(int argc, char *argv[])
 
                 sprintf(msg_buffer,"0%sXXX",time_string);
 
-                answerClient(m->client.sin_addr,msg_buffer,0);  
+                answerClient(m->client.sin_addr,msg_buffer);  
                 write_action(entrance_log,WENT_IN,last_ticket);
             }
             else if (m->in_out=='s' && parking_space[m->car_id] != NULL){
@@ -346,8 +356,8 @@ int main(int argc, char *argv[])
 
                 last_payment = ticket_price(m->car_id);
 
-                sprintf(msg_buffer,"%d",last_payment);
-                answerClient(m->client.sin_addr,msg_buffer,0); 
+                sprintf(msg_buffer,"X%d",last_payment);
+                answerClient(m->client.sin_addr,msg_buffer); 
 
                 write_action(exit_log,WENT_OUT,m->car_id);
                 
