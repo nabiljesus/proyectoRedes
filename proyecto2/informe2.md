@@ -82,6 +82,33 @@ Los servicios simultáneos son recibidos en el orden en que el flujo de la red l
 
 La pérdida de información desde el servidor hacia el usuario es manejado por el cliente el cual realiza hasta 3 esperas temporizadas de 30 segundos para desistir.
 
-6. Opcional: Construya un aplicación confiable, que garantice la entrega, evite
-información duplicada y pérdida de información. Todos estos controles
-deben estar en capa de aplicación.
+\newpage
+
+# Referencias
+
+##Documentación sobre C y sockets 
+
+* Difference in UNIX Domain Sockets: SOCK_DGRAM vs SOCK_STREAM
+    - http://www.linuxquestions.org/questions/programming-9/difference-in-unix-domain-sockets-sock_dgram-vs-sock_stream-624041/
+
+* Sockets Tutorial
+    - http://www.linuxhowtos.org/C_C++/socket.htm
+
+* Strings in C
+    - http://www.tutorialspoint.com/cprogramming/c_strings.htm
+
+##Referencias teóricas
+
+* Network socket
+    - https://en.wikipedia.org/wiki/Network_socket
+
+* UDP (User Datagram Protocol)
+    - http://searchsoa.techtarget.com/definition/UDP
+
+* UDP, User Datagram Protoco
+    - http://www.networksorcery.com/enp/protocol/udp.htm
+
+* User Datagram Protocol
+    - https://es.wikipedia.org/wiki/User_Datagram_Protocol
+
+
