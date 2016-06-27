@@ -153,6 +153,14 @@ void write_action(char *output_file,int coming_inside,int i){
     
     /* Creacion de string para el log*/
     strftime(time_buffer, 30, "%d/%m/%Y %H:%M:%S", parking_space[i]);
+
+    if (coming_inside == 2 ){
+        fprintf(log_file
+               ,"%s | Carro no pudo entrar por estacionamiento lleno \n"
+               ,time_buffer);
+        return;
+    }
+
     fprintf(log_file
            ,"%s | carro con ticket #%03d ha %s"
            ,time_buffer
